@@ -175,7 +175,7 @@ export default function App() {
     }
   }, [messages, conversationState]);
 
-  const handleRobotChat = async (prompt: string, type: 'general' | 'story' | 'confide' | 'task' | 'inspiration' | 'daily' = 'general') => {
+  const handleRobotChat = async (prompt: string, type: 'general' | 'story' | 'confide' | 'task' | 'inspiration' | 'daily' | 'podcast' = 'general') => {
     // Intent detection for Chat scenarios and other modules
     const lowerPrompt = prompt.toLowerCase();
     
@@ -435,6 +435,9 @@ export default function App() {
 
   const startAudioCapture = async () => {
     try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error("getUserMedia is not supported or device not found");
+      }
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       audioContextRef.current = new AudioContext({ sampleRate: 16000 });
       const source = audioContextRef.current.createMediaStreamSource(stream);
@@ -449,7 +452,11 @@ export default function App() {
       };
       source.connect(processorRef.current);
       processorRef.current.connect(audioContextRef.current.destination);
-    } catch (err) { console.error(err); }
+    } catch (err) { 
+      console.warn("Could not capture audio:", err);
+      // Gracefully stop voice mode if mic access fails
+      stopVoiceMode();
+    }
   };
 
   const formatSeconds = (s: number) => {
@@ -562,7 +569,7 @@ export default function App() {
         );
       case 'echo':
         return (
-          <FunctionalModulePlate isDarkMode={isDarkMode}>
+          <FunctionalModulePlate isDarkMode={isDarkMode} className="!bg-transparent !border-transparent !shadow-none !backdrop-blur-none">
             <div className="relative z-10 w-full h-full flex flex-col justify-between">
               {subCategory === 'echo-history' ? (
                 <EchoHistoryView 
@@ -593,7 +600,7 @@ export default function App() {
                     }
                     if (!isChatOpen) setIsChatOpen(true);
                     if (!isVoiceActive) startVoiceMode();
-                    handleRobotChat(`开启${type === 'story' ? '故事' : type === 'confide' ? '倾诉' : type === 'task' ? '事务' : type === 'daily' ? '日记' : '灵感'}情境`, type);
+                    handleRobotChat(`开启${type === 'story' ? '故事' : type === 'podcast' ? '播客' : type === 'confide' ? '倾诉' : type === 'task' ? '事务' : type === 'daily' ? '日记' : '灵感'}情境`, type);
                   }}
                 />
               )}

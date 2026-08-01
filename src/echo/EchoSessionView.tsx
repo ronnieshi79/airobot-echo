@@ -8,7 +8,8 @@ import {
   Brain,
   ListTodo,
   ChevronDown,
-  PenLine
+  PenLine,
+  Headphones
 } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
 
@@ -26,7 +27,7 @@ interface ActionItem {
 }
 
 interface EchoSessionViewProps {
-  type: 'story' | 'confide' | 'task' | 'inspiration' | 'daily';
+  type: 'story' | 'confide' | 'task' | 'inspiration' | 'daily' | 'podcast';
   messages: Message[];
   onClose: (summary?: string) => void;
   isDarkMode: boolean;
@@ -93,6 +94,15 @@ export const EchoSessionView: React.FC<EchoSessionViewProps> = ({
       textColor: 'text-amber-600',
       spineColor: 'bg-[#B45309]', // Earthy amber/brown
       desc: '记录每日小确幸与感悟，留住生活温度，让每一天都值得回味。'
+    },
+    podcast: {
+      title: '治愈播客',
+      icon: <Headphones size={24} className="text-purple-600" />,
+      prompts: ["欢迎收听今天的晚间播客，想聊点什么？", "为你精选了一段轻松的旅途故事。", "今天的治愈电台已经为你准备好。"],
+      color: 'bg-purple-500',
+      textColor: 'text-purple-600',
+      spineColor: 'bg-[#5B3A75]', // Muted earthy purple
+      desc: '随身声优讲述治愈系旅行与生活纪事，带走一天沉重。'
     }
   };
 

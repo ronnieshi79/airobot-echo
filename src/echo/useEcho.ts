@@ -9,7 +9,7 @@ export interface HistorySummary {
   id: string;
   date: string;
   content: string;
-  type: 'story' | 'confide' | 'task' | 'inspiration' | 'daily';
+  type: 'story' | 'confide' | 'task' | 'inspiration' | 'daily' | 'podcast';
   followUp?: string;
 }
 
@@ -24,7 +24,7 @@ export function useEcho() {
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [activeChatSession, setActiveChatSession] = useState<{
     id: string;
-    type: 'story' | 'confide' | 'task' | 'inspiration' | 'daily';
+    type: 'story' | 'confide' | 'task' | 'inspiration' | 'daily' | 'podcast';
     messages: { role: 'user' | 'bot'; text: string }[];
     summary?: string;
   } | null>(null);
@@ -56,7 +56,7 @@ export function useEcho() {
     }
   }, []);
 
-  const startNewSession = useCallback((type: 'story' | 'confide' | 'task' | 'inspiration' | 'daily') => {
+  const startNewSession = useCallback((type: 'story' | 'confide' | 'task' | 'inspiration' | 'daily' | 'podcast') => {
     setActiveChatSession({
       id: Date.now().toString(),
       type,

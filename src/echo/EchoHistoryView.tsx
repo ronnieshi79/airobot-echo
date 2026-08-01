@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { History, ArrowLeft, Book, Heart, ListTodo, Brain, ChevronDown, PenLine } from 'lucide-react';
+import { History, ArrowLeft, Book, Heart, ListTodo, Brain, ChevronDown, PenLine, Headphones } from 'lucide-react';
 import { HistorySummary } from './useEcho';
 
 interface EchoHistoryViewProps {
@@ -10,7 +10,7 @@ interface EchoHistoryViewProps {
 }
 
 export const EchoHistoryView: React.FC<EchoHistoryViewProps> = ({ isDarkMode, historySummaries, onBack }) => {
-  const [activeFilter, setActiveFilter] = useState<'all' | 'story' | 'confide' | 'task' | 'inspiration' | 'daily'>('all');
+  const [activeFilter, setActiveFilter] = useState<'all' | 'story' | 'confide' | 'task' | 'inspiration' | 'daily' | 'podcast'>('all');
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -19,6 +19,7 @@ export const EchoHistoryView: React.FC<EchoHistoryViewProps> = ({ isDarkMode, hi
       case 'task': return <ListTodo size={14} className="text-emerald-500" />;
       case 'inspiration': return <Brain size={14} className="text-indigo-500" />;
       case 'daily': return <PenLine size={14} className="text-amber-500" />;
+      case 'podcast': return <Headphones size={14} className="text-purple-500" />;
       default: return <History size={14} className="text-blue-500" />;
     }
   };
@@ -30,6 +31,7 @@ export const EchoHistoryView: React.FC<EchoHistoryViewProps> = ({ isDarkMode, hi
       case 'task': return '事务';
       case 'inspiration': return '灵感';
       case 'daily': return '日记';
+      case 'podcast': return '播客';
       default: return '对话';
     }
   };
@@ -41,6 +43,7 @@ export const EchoHistoryView: React.FC<EchoHistoryViewProps> = ({ isDarkMode, hi
       case 'task': return 'bg-emerald-500';
       case 'inspiration': return 'bg-indigo-500';
       case 'daily': return 'bg-amber-500';
+      case 'podcast': return 'bg-purple-500';
       default: return 'bg-blue-500';
     }
   };
@@ -92,7 +95,7 @@ export const EchoHistoryView: React.FC<EchoHistoryViewProps> = ({ isDarkMode, hi
 
             {/* Filters */}
             <div className="flex gap-2 mb-6 relative z-20 flex-wrap">
-              {(['all', 'story', 'confide', 'task', 'inspiration', 'daily'] as const).map(filter => (
+              {(['all', 'story', 'confide', 'task', 'inspiration', 'daily', 'podcast'] as const).map(filter => (
                 <button
                   key={filter}
                   onClick={() => setActiveFilter(filter)}

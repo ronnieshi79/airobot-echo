@@ -28,7 +28,7 @@ export const useAether = () => {
     setIsChatOpen(true);
   }, []);
 
-  const handleRobotChat = async (prompt: string, type: 'general' | 'story' | 'confide' | 'task' | 'inspiration' | 'daily' = 'general') => {
+  const handleRobotChat = async (prompt: string, type: 'general' | 'story' | 'confide' | 'task' | 'inspiration' | 'daily' | 'podcast' = 'general') => {
     setMessages(prev => [...prev, { role: 'user', text: prompt }]);
     setConversationState('thinking');
     

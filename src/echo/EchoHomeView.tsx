@@ -28,7 +28,7 @@ interface EchoHomeViewProps {
   subCategory: SubCategory;
   historySummaries: HistorySummary[];
   onSendMessage: (text: string) => void;
-  onStartSession: (type: 'story' | 'confide' | 'task' | 'inspiration' | 'daily', content?: string) => void;
+  onStartSession: (type: 'story' | 'confide' | 'task' | 'inspiration' | 'daily' | 'podcast', content?: string) => void;
   onViewHistory: () => void;
   time: Date;
   contextMode?: ContextType;
@@ -37,7 +37,7 @@ interface EchoHomeViewProps {
 
 interface ServiceCard {
   id: string;
-  type: 'story' | 'confide' | 'task' | 'inspiration' | 'daily';
+  type: 'story' | 'confide' | 'task' | 'inspiration' | 'daily' | 'podcast';
   title: string;
   subtitle: string;
   recommendBadge: string;
@@ -330,7 +330,7 @@ export const EchoHomeView: React.FC<EchoHomeViewProps> = ({
         },
         {
           id: 'e2',
-          type: 'story',
+          type: 'podcast',
           title: '暮色治愈轻播客',
           subtitle: '声优解压 · 轻松随想',
           recommendBadge: '🎧 伴听推荐',
