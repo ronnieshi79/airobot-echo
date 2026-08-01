@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Clock, 
@@ -51,6 +51,7 @@ import { MainCategory, SubCategory, ScheduleItem, Message, AlarmItem, ActiveCard
 import { SubCategoryDial } from './components/SubCategoryDial';
 import { SkeuomorphicDial } from './components/SkeuomorphicDial';
 import { FunctionalModulePlate } from './components/FunctionalModulePlate';
+import { ThemeContextSelector, ContextType } from './components/ThemeContextSelector';
 
 // Initialize Gemini
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
@@ -59,6 +60,7 @@ export default function App() {
   const [mainCategory, setMainCategory] = useState<MainCategory>('echo');
   const [subCategory, setSubCategory] = useState<SubCategory>('echo-home');
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [contextMode, setContextMode] = useState<ContextType>('auto');
   
   // AI Robot Module
   const {
@@ -112,6 +114,29 @@ export default function App() {
     toggleSchedule,
     deleteSchedule
   } = useSchedule();
+
+  const activeContext = useMemo(() => {
+    if (contextMode !== 'auto') return contextMode;
+    const currentHour = time.getHours();
+    if (currentHour >= 5 && currentHour < 11) return 'morning';
+    if (currentHour >= 11 && currentHour < 17) return 'afternoon';
+    if (currentHour >= 17 && currentHour < 21) return 'evening';
+    return 'night';
+  }, [contextMode, time]);
+
+  const themeBgMap = {
+    morning: isDarkMode ? 'from-slate-950 via-amber-950/40 to-orange-950/30' : 'from-amber-50 via-orange-50/40 to-yellow-50',
+    afternoon: isDarkMode ? 'from-slate-950 via-teal-950/40 to-emerald-950/30' : 'from-emerald-50 via-teal-50/40 to-sky-50',
+    evening: isDarkMode ? 'from-slate-950 via-rose-950/40 to-pink-950/30' : 'from-rose-50 via-pink-50/40 to-orange-50',
+    night: isDarkMode ? 'from-slate-950 via-indigo-950/40 to-purple-950/30' : 'from-indigo-50 via-slate-100 to-purple-50'
+  };
+
+  const themeGlowMap = {
+    morning: isDarkMode ? 'bg-amber-600' : 'bg-amber-300',
+    afternoon: isDarkMode ? 'bg-emerald-600' : 'bg-emerald-300',
+    evening: isDarkMode ? 'bg-rose-600' : 'bg-rose-300',
+    night: isDarkMode ? 'bg-indigo-600' : 'bg-indigo-300'
+  };
 
   // AI Echo Module
   const {
@@ -547,6 +572,8 @@ export default function App() {
                 />
               ) : (
                 <EchoHomeView 
+                  contextMode={contextMode}
+                  onContextModeChange={setContextMode}
                   historySummaries={historySummaries}
                   onSendMessage={(text) => {
                     if (!isChatOpen) setIsChatOpen(true);
@@ -599,12 +626,12 @@ export default function App() {
   };
 
   return (
-    <div className={`min-h-screen flex flex-col items-center justify-center p-4 transition-colors duration-500 overflow-hidden ${isDarkMode ? 'bg-dark' : 'bg-light'}`}>
+    <div className={`min-h-screen flex flex-col items-center justify-center p-4 transition-all duration-700 overflow-hidden bg-gradient-to-br ${themeBgMap[activeContext]} ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
       
       {/* Decorative Background Elements */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className={`absolute -top-20 -left-20 w-96 h-96 rounded-full blur-[100px] opacity-20 ${isDarkMode ? 'bg-indigo-900' : 'bg-indigo-200'}`}></div>
-        <div className={`absolute bottom-0 -right-20 w-[600px] h-[600px] rounded-full blur-[120px] opacity-10 ${isDarkMode ? 'bg-slate-700' : 'bg-slate-300'}`}></div>
+        <div className={`absolute -top-20 -left-20 w-96 h-96 rounded-full blur-[100px] opacity-25 transition-all duration-700 ${themeGlowMap[activeContext]}`}></div>
+        <div className={`absolute bottom-0 -right-20 w-[600px] h-[600px] rounded-full blur-[120px] opacity-15 transition-all duration-700 ${themeGlowMap[activeContext]}`}></div>
         <div className={`absolute top-1/2 left-1/4 w-20 h-20 rounded-full blur-[40px] opacity-30 ${isDarkMode ? 'bg-slate-600' : 'bg-white'}`}></div>
       </div>
 
@@ -856,13 +883,21 @@ export default function App() {
       </div>
     </div>
 
-      {/* Theme Toggle */}
-      <button 
-        onClick={() => setIsDarkMode(!isDarkMode)}
-        className={`fixed bottom-8 left-8 w-14 h-14 rounded-2xl flex items-center justify-center shadow-xl transition-all active:scale-90 z-20 ${isDarkMode ? 'bg-slate-800 text-white' : 'bg-white text-slate-800'}`}
-      >
-        {isDarkMode ? <Sun size={24} /> : <Moon size={24} />}
-      </button>
+      {/* Theme & Context Controller */}
+      <ThemeContextSelector 
+        contextMode={contextMode}
+        onContextModeChange={(mode) => {
+          setContextMode(mode);
+          if (mode === 'night') {
+            setIsDarkMode(true);
+          } else if (mode === 'morning' || mode === 'afternoon') {
+            setIsDarkMode(false);
+          }
+        }}
+        isDarkMode={isDarkMode}
+        onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
+        activeContext={activeContext}
+      />
 
       <style>{`
         .custom-scrollbar::-webkit-scrollbar { width: 5px; }

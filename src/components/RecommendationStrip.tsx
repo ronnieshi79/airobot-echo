@@ -102,7 +102,7 @@ export const RecommendationStrip: React.FC<RecommendationStripProps> = ({
       content: '想听个故事或者聊聊心事吗？AETHER 随时待命。建议：试试“心事倾诉”模式，让我倾听你的声音。',
       prompt: '我今天有点不开心',
       category: 'echo',
-      subCategory: 'echo-confide',
+      subCategory: 'echo-home',
       color: 'text-pink-500'
     });
 
@@ -113,7 +113,7 @@ export const RecommendationStrip: React.FC<RecommendationStripProps> = ({
       content: `当前天气${todayInfo.weather.condition}。AETHER 建议：${todayInfo.weather.condition.includes('雨') ? '带把伞，心情也会变晴朗' : '是个出门散步的好时机'}。`,
       prompt: '根据天气推荐一些活动',
       category: 'echo',
-      subCategory: 'echo-inspiration',
+      subCategory: 'echo-home',
       color: 'text-blue-500'
     });
 

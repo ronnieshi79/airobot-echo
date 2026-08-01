@@ -18,10 +18,10 @@ export const FunctionalModulePlate: React.FC<FunctionalModulePlateProps> = ({
     <motion.div 
       initial={{ opacity: 0, scale: 0.9, y: 20 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
-      className={`w-full max-w-[640px] h-[725px] p-10 rounded-[5rem] transition-all duration-500 relative border-2 ${
+      className={`w-full max-w-[640px] h-[725px] p-7 sm:p-8 rounded-[3.5rem] overflow-hidden transition-all duration-500 relative border ${
         isDarkMode 
-          ? 'bg-slate-900/80 border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.8)]' 
-          : 'bg-white/90 border-black/5 shadow-[0_40px_100px_rgba(0,0,0,0.1)]'
+          ? 'bg-slate-900/85 border-white/10 shadow-[0_30px_90px_rgba(0,0,0,0.7)]' 
+          : 'bg-white/90 border-black/5 shadow-[0_30px_90px_rgba(0,0,0,0.08)]'
       } backdrop-blur-xl ${className}`}
     >
       {/* Decorative background element */}
