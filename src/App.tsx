@@ -44,7 +44,7 @@ import {
 import { GoogleGenAI, Modality, LiveServerMessage } from "@google/genai";
 import { HomeMenu } from './components/HomeMenu';
 import { AlarmView, TimeView, useClock } from './clock';
-import { AetherRobot, useAether } from './airobot';
+import { AiRobot, AetherRobot, useAether } from './airobot';
 import { useSchedule, TodayView, CalendarView, ScheduleView } from './schedule';
 import { useEcho, EchoHomeView, EchoSessionView, EchoHistoryView } from './echo';
 import { MainCategory, SubCategory, ScheduleItem, Message, AlarmItem, ActiveCard } from './types';
@@ -118,9 +118,11 @@ export default function App() {
   const activeContext = useMemo(() => {
     if (contextMode !== 'auto') return contextMode;
     const currentHour = time.getHours();
-    if (currentHour >= 5 && currentHour < 11) return 'morning';
-    if (currentHour >= 11 && currentHour < 17) return 'afternoon';
-    if (currentHour >= 17 && currentHour < 21) return 'evening';
+    const currentMinutes = time.getMinutes();
+    const timeValue = currentHour + currentMinutes / 60;
+    if (timeValue >= 5 && timeValue < 11) return 'morning';
+    if (timeValue >= 11 && timeValue < 17.5) return 'afternoon';
+    if (timeValue >= 17.5 && timeValue < 21.5) return 'evening';
     return 'night';
   }, [contextMode, time]);
 
@@ -682,26 +684,14 @@ export default function App() {
                   >
                     {/* Robot Head Header - Overlapping top left */}
                     <div className="absolute -top-10 -left-10 z-50">
-                      <div className={`w-28 h-28 rounded-[2.5rem] flex items-center justify-center relative border-4 border-white shadow-2xl bg-[#BEE9F8]`}>
-                        <div className="flex gap-4">
-                          <motion.div 
-                            animate={conversationState === 'speaking' 
-                              ? { scaleX: [1, 1.5, 1], opacity: [1, 0.6, 1] } 
-                              : (conversationState === 'listening' ? { scaleX: [1, 1.2, 1] } : { scaleX: 1 })
-                            }
-                            transition={{ repeat: Infinity, duration: 0.8 }}
-                            className="w-6 h-1.5 bg-orange-500 rounded-full"
-                          />
-                          <motion.div 
-                            animate={conversationState === 'speaking' 
-                              ? { scaleX: [1, 1.5, 1], opacity: [1, 0.6, 1] } 
-                              : (conversationState === 'listening' ? { scaleX: [1, 1.2, 1] } : { scaleX: 1 })
-                            }
-                            transition={{ repeat: Infinity, duration: 0.8, delay: 0.1 }}
-                            className="w-6 h-1.5 bg-orange-500 rounded-full"
-                          />
-                        </div>
-                      </div>
+                      <AiRobot 
+                        size="md"
+                        isSpeaking={isSpeaking}
+                        isBlinking={isBlinking}
+                        conversationState={conversationState}
+                        isVoiceActive={isVoiceActive}
+                        isDarkMode={isDarkMode}
+                      />
                     </div>
 
                     {/* Header Info */}
@@ -830,25 +820,17 @@ export default function App() {
             </AnimatePresence>
 
             <div className={`flex flex-col items-center gap-6 relative ${isChatOpen ? 'hidden' : 'flex'}`}>
-              <motion.div 
-                animate={{ 
-                  y: [0, -8, 0],
-                  rotate: [0, 1, -1, 0]
-                }}
-                transition={{ 
-                  repeat: Infinity, 
-                  duration: 4, 
-                  ease: "easeInOut" 
-                }}
-                className="relative flex flex-col items-center"
-              >
-              <AetherRobot 
+              <AiRobot 
                 isSpeaking={isSpeaking}
                 isBlinking={isBlinking}
                 isChatOpen={isChatOpen}
+                conversationState={conversationState}
+                isVoiceActive={isVoiceActive}
+                isDarkMode={isDarkMode}
+                activeContext={activeContext}
                 onClick={() => setIsChatOpen(!isChatOpen)}
+                size="lg"
               />
-            </motion.div>
 
             {!isChatOpen && (
               <div className="flex flex-col items-center gap-4">

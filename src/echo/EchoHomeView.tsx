@@ -101,26 +101,28 @@ export const EchoHomeView: React.FC<EchoHomeViewProps> = ({
   const setSelectedContext = onContextModeChange || setInternalContext;
 
   const currentHour = time.getHours();
+  const currentMinutes = time.getMinutes();
+  const timeValue = currentHour + currentMinutes / 60;
 
   // Determine current active context automatically based on time if set to 'auto'
   const activeContextKey = useMemo(() => {
     if (selectedContext !== 'auto') return selectedContext;
-    if (currentHour >= 5 && currentHour < 11) return 'morning';
-    if (currentHour >= 11 && currentHour < 17) return 'afternoon';
-    if (currentHour >= 17 && currentHour < 21) return 'evening';
+    if (timeValue >= 5 && timeValue < 11) return 'morning';
+    if (timeValue >= 11 && timeValue < 17.5) return 'afternoon';
+    if (timeValue >= 17.5 && timeValue < 21.5) return 'evening';
     return 'night';
-  }, [selectedContext, currentHour]);
+  }, [selectedContext, timeValue]);
 
-  // Context Profiles with strongly distinctive visual theme configurations
+  // Context Profiles tailored for programmers / office professionals throughout the day
   const contextProfiles: Record<'night' | 'morning' | 'afternoon' | 'evening', ContextProfile> = {
     night: {
       id: 'night',
       label: '深夜静谧',
-      timeRange: '21:00 - 05:00',
+      timeRange: '21:30 - 05:00',
       badgeIcon: <Moon size={14} className="text-indigo-400" />,
       metaphorSymbol: '🌙',
-      weatherText: '听雨夜星 · 沉浸助眠',
-      aiQuote: '夜深了，风里带着星辰的沉静。为您挑选今夜最温柔的声优故事与安心树洞。',
+      weatherText: '终端沉静 · 极客随笔与星空助眠',
+      aiQuote: '夜深了，终端归于沉静。记录今天的心得感悟，在星辰白噪音中安心入眠。',
       theme: {
         bgGradientLight: 'from-indigo-100/70 via-slate-100/50 to-purple-100/60',
         bgGradientDark: 'from-slate-950 via-indigo-950/60 to-purple-950/50',
@@ -151,33 +153,33 @@ export const EchoHomeView: React.FC<EchoHomeViewProps> = ({
           type: 'story',
           title: '睡前沉浸奇幻故事',
           subtitle: '声优伴播 · 自然助眠',
-          recommendBadge: '✨ 夜间首选',
+          recommendBadge: '✨ 助眠首选',
           tag: '睡前助眠',
-          desc: '倾诉奇幻森林与星河传说，抚平夜间的思绪焦躁。',
+          desc: '倾诉星空、古老森林与极客传说，抚平大脑的高速运转与思绪焦虑。',
           icon: <Book size={22} className="text-indigo-500 dark:text-indigo-300" />,
-          initialPrompt: '请为我讲一个关于星空与古老森林的睡前舒缓奇幻故事，语气温柔安宁。'
+          initialPrompt: '请为我讲一个关于星空与古老森林的睡前舒缓奇幻故事，伴我入眠。'
         },
         {
           id: 'n2',
-          type: 'confide',
-          title: '深夜安心解压树洞',
-          subtitle: '情绪安全港 · 温暖倾听',
-          recommendBadge: '💡 治愈推荐',
-          tag: '情绪倾诉',
-          desc: '卸下一步不敢表露的压力，把难言心事悄悄告诉懂你的AI。',
+          type: 'daily',
+          title: '开发者随笔与灵感星图',
+          subtitle: '灵感归档 · 生活小确幸',
+          recommendBadge: '💡 沉淀记录',
+          tag: '心得沉淀',
+          desc: '记录今日攻克技术难题的心得、闪光点子与生活小确幸。',
           icon: <Heart size={22} className="text-purple-500 dark:text-purple-300" />,
-          initialPrompt: '夜深了有些睡不着，心里有些小情绪，想和你聊聊。'
+          initialPrompt: '我想记录今天解决的一个技术难点心得与生活中的小确幸。'
         }
       ]
     },
     morning: {
       id: 'morning',
-      label: '晨光拂晓',
+      label: '晨光通勤',
       timeRange: '05:00 - 11:00',
       badgeIcon: <CloudSun size={14} className="text-amber-500" />,
       metaphorSymbol: '🌅',
-      weatherText: '晨阳清爽 · 能量唤醒',
-      aiQuote: '晨光微熹，充满希望的一天开始了。为您梳理今日最核心的能量与焦点。',
+      weatherText: '晨光拂晓 · 站会排期与通勤早报',
+      aiQuote: '晨光破晓，元气上线。已为你梳理今日 Standup 站会重点、待提 PR 与晨间通勤伴听。',
       theme: {
         bgGradientLight: 'from-amber-100/70 via-orange-50/50 to-yellow-100/60',
         bgGradientDark: 'from-slate-950 via-amber-950/60 to-orange-950/40',
@@ -206,35 +208,35 @@ export const EchoHomeView: React.FC<EchoHomeViewProps> = ({
         {
           id: 'm1',
           type: 'task',
-          title: '晨间 AI 3分钟速递',
-          subtitle: '智能提炼 · 今日焦点',
+          title: '晨间 Standup & 今日焦点',
+          subtitle: '智能提炼 · 任务排期',
           recommendBadge: '✨ 晨起首选',
-          tag: '高效晨报',
-          desc: '快速梳理今天的工作重心、天气提示与关键行程重点。',
+          tag: '站会备忘',
+          desc: '快速梳理今日核心开发任务、会议排期与代码评审优先级。',
           icon: <Radio size={22} className="text-amber-600 dark:text-amber-300" />,
-          initialPrompt: '请帮我梳理今天早晨的焦点计划与晨间提醒。'
+          initialPrompt: '请帮我梳理今天的 Standup 站会要点与核心开发任务清单。'
         },
         {
           id: 'm2',
-          type: 'daily',
-          title: '早安愿景微卡片',
-          subtitle: '立下锚点 · 元气开启',
-          recommendBadge: '🎯 目标锚点',
-          tag: '元气立意',
-          desc: '写下今天最期待完成的小目标，用好心情迎接全新挑战。',
+          type: 'podcast',
+          title: '通勤极客轻播客',
+          subtitle: '科技速递 · 轻松伴听',
+          recommendBadge: '🎧 伴听推荐',
+          tag: '通勤伴听',
+          desc: '随身声优讲述科技前沿快讯与轻快故事，元气开启通勤路。',
           icon: <PenLine size={22} className="text-orange-600 dark:text-orange-300" />,
-          initialPrompt: '早安！我想记录今天最想完成的三件事情。'
+          initialPrompt: '请播放一段适合上班通勤听的技术快讯与能量轻播客。'
         }
       ]
     },
     afternoon: {
       id: 'afternoon',
-      label: '午后沉浸',
-      timeRange: '11:00 - 17:00',
+      label: '深度工作',
+      timeRange: '11:00 - 17:30',
       badgeIcon: <Sun size={14} className="text-teal-500" />,
       metaphorSymbol: '☀️',
-      weatherText: '阳光清朗 · 高效专注',
-      aiQuote: '午后阳光正好，有什么突发的闪光灵感或难题需要我协助突破吗？',
+      weatherText: '心流编码 · 架构设计与灵感突破',
+      aiQuote: '午后阳光正好，心流模式就绪。有什么架构难题、重构思路或闪光灵感需要我协助突破吗？',
       theme: {
         bgGradientLight: 'from-emerald-100/70 via-teal-50/50 to-sky-100/60',
         bgGradientDark: 'from-slate-950 via-teal-950/60 to-emerald-950/40',
@@ -263,35 +265,35 @@ export const EchoHomeView: React.FC<EchoHomeViewProps> = ({
         {
           id: 'a1',
           type: 'inspiration',
-          title: '创意突破头脑风暴',
+          title: '架构设计与灵感风暴',
           subtitle: 'AI 灵感合伙人 · 方案拆解',
           recommendBadge: '✨ 灵感首选',
-          tag: '创意加速',
-          desc: '遇到策划瓶颈？快速拆解难题，碰撞出出彩的创意点子。',
+          tag: '架构拆解',
+          desc: '遇到技术选型或重构瓶颈？快速拆解逻辑，碰撞出优雅的架构方案。',
           icon: <Brain size={22} className="text-sky-600 dark:text-sky-300" />,
-          initialPrompt: '我目前遇到一个设计/策划瓶颈，想和你一起头脑风暴一下。'
+          initialPrompt: '我正在设计一个技术方案，想和你一起做个架构拆解与头脑风暴。'
         },
         {
           id: 'a2',
           type: 'task',
-          title: '脑力续航与待办整理',
-          subtitle: '纪要归档 · 待办跟进',
+          title: 'Debug 树洞与专注清单',
+          subtitle: '疑难排查 · 专注心流',
           recommendBadge: '⚡ 效率推荐',
-          tag: '高效整理',
-          desc: '一句话整理下午会议纪要与事项优先级跟进。',
+          tag: 'Debug排查',
+          desc: '理清复杂 Bug 排查步骤与根因假设，开启沉浸专注开发。',
           icon: <ListTodo size={22} className="text-emerald-600 dark:text-emerald-300" />,
-          initialPrompt: '帮我整理一下下午要跟进的重点事项与会议纪要。'
+          initialPrompt: '帮我理清这个代码 Bug 的排查路线，并开启一段专注心流。'
         }
       ]
     },
     evening: {
       id: 'evening',
-      label: '暮色余晖',
-      timeRange: '17:00 - 21:00',
+      label: '暮色下班',
+      timeRange: '17:30 - 21:30',
       badgeIcon: <Sunset size={14} className="text-rose-400" />,
       metaphorSymbol: '🌆',
-      weatherText: '落日温存 · 卸压治愈',
-      aiQuote: '辛苦了一天，卸下疲惫。把工作烦恼交给AI树洞，倾听晚间放松。',
+      weatherText: '落日余晖 · 告别工单与卸压复盘',
+      aiQuote: '辛苦了一天，合上电脑。把工作委屈与繁琐工单交给AI树洞，开启晚间放松。',
       theme: {
         bgGradientLight: 'from-rose-100/70 via-pink-50/50 to-orange-100/60',
         bgGradientDark: 'from-slate-950 via-rose-950/60 to-pink-950/40',
@@ -324,9 +326,9 @@ export const EchoHomeView: React.FC<EchoHomeViewProps> = ({
           subtitle: '情绪疏导 · 治愈陪伴',
           recommendBadge: '✨ 卸压首选',
           tag: '情绪安全',
-          desc: '把工作中的委屈与疲惫说出来，享受无压力的温柔回应。',
+          desc: '把代码改动与需求催促进度中的疲惫说出来，享受无压力的温柔回应。',
           icon: <Heart size={22} className="text-rose-600 dark:text-rose-300" />,
-          initialPrompt: '终于下班了，感觉今天好累，想和你吐槽倾诉一下。'
+          initialPrompt: '终于下班了，今天写代码改需求好心累，想和你聊聊卸卸压。'
         },
         {
           id: 'e2',
@@ -334,8 +336,8 @@ export const EchoHomeView: React.FC<EchoHomeViewProps> = ({
           title: '暮色治愈轻播客',
           subtitle: '声优解压 · 轻松随想',
           recommendBadge: '🎧 伴听推荐',
-          tag: '晚间陪伴',
-          desc: '随身声优讲述治愈系旅行与生活纪事，带走一天沉重。',
+          tag: '晚间放松',
+          desc: '随身声优讲述治愈系旅行与生活纪事，带走一整天的脑力沉重。',
           icon: <Headphones size={22} className="text-purple-600 dark:text-purple-300" />,
           initialPrompt: '请给我放一段轻松惬意的晚间播客故事。'
         }
