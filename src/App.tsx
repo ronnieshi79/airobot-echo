@@ -61,6 +61,7 @@ export default function App() {
   const [subCategory, setSubCategory] = useState<SubCategory>('echo-home');
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [contextMode, setContextMode] = useState<ContextType>('auto');
+  const [dayTypeMode, setDayTypeMode] = useState<'auto' | 'workday' | 'weekend'>('auto');
   
   // AI Robot Module
   const {
@@ -115,6 +116,13 @@ export default function App() {
     deleteSchedule
   } = useSchedule();
 
+  const dayOfWeek = time.getDay();
+  const isWeekend = useMemo(() => {
+    if (dayTypeMode === 'weekend') return true;
+    if (dayTypeMode === 'workday') return false;
+    return dayOfWeek === 0 || dayOfWeek === 6;
+  }, [dayTypeMode, dayOfWeek]);
+
   const activeContext = useMemo(() => {
     if (contextMode !== 'auto') return contextMode;
     const currentHour = time.getHours();
@@ -127,10 +135,10 @@ export default function App() {
   }, [contextMode, time]);
 
   const themeBgMap = {
-    morning: isDarkMode ? 'from-slate-950 via-amber-950/40 to-orange-950/30' : 'from-amber-50 via-orange-50/40 to-yellow-50',
-    afternoon: isDarkMode ? 'from-slate-950 via-teal-950/40 to-emerald-950/30' : 'from-emerald-50 via-teal-50/40 to-sky-50',
-    evening: isDarkMode ? 'from-slate-950 via-rose-950/40 to-pink-950/30' : 'from-rose-50 via-pink-50/40 to-orange-50',
-    night: isDarkMode ? 'from-slate-950 via-indigo-950/40 to-purple-950/30' : 'from-indigo-50 via-slate-100 to-purple-50'
+    morning: isDarkMode ? 'from-slate-950 via-amber-950/40 to-orange-950/30' : (isWeekend ? 'from-amber-50 via-yellow-50/40 to-orange-50' : 'from-amber-50 via-orange-50/40 to-yellow-50'),
+    afternoon: isDarkMode ? 'from-slate-950 via-teal-950/40 to-emerald-950/30' : (isWeekend ? 'from-teal-50 via-emerald-50/40 to-sky-50' : 'from-emerald-50 via-teal-50/40 to-sky-50'),
+    evening: isDarkMode ? 'from-slate-950 via-rose-950/40 to-pink-950/30' : (isWeekend ? 'from-orange-50 via-rose-50/40 to-pink-50' : 'from-rose-50 via-pink-50/40 to-orange-50'),
+    night: isDarkMode ? 'from-slate-950 via-indigo-950/40 to-purple-950/30' : (isWeekend ? 'from-purple-50 via-indigo-50/40 to-pink-50' : 'from-indigo-50 via-slate-100 to-purple-50')
   };
 
   const themeGlowMap = {
@@ -583,6 +591,8 @@ export default function App() {
                 <EchoHomeView 
                   contextMode={contextMode}
                   onContextModeChange={setContextMode}
+                  dayTypeMode={dayTypeMode}
+                  isWeekend={isWeekend}
                   historySummaries={historySummaries}
                   onSendMessage={(text) => {
                     if (!isChatOpen) setIsChatOpen(true);
@@ -886,6 +896,10 @@ export default function App() {
         isDarkMode={isDarkMode}
         onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
         activeContext={activeContext}
+        dayTypeMode={dayTypeMode}
+        onDayTypeModeChange={setDayTypeMode}
+        isWeekend={isWeekend}
+        time={time}
       />
 
       <style>{`
