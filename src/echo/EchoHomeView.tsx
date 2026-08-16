@@ -1208,17 +1208,17 @@ export const EchoHomeView: React.FC<EchoHomeViewProps> = ({
 
         </div>
 
-        {/* Carousel & Pagination Controller Positioned Directly Underneath Card */}
-        <div className="flex items-center gap-2 mt-3 px-3 py-1.5 rounded-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 shadow-2xs backdrop-blur-xs">
+        {/* Minimalist Ambient Pagination Indicator (Fully integrated with atmosphere) */}
+        <div className="flex items-center gap-1.5 mt-2.5 px-2.5 py-1 rounded-full bg-transparent hover:bg-black/[0.03] dark:hover:bg-white/[0.04] transition-all duration-300">
           <button
             onClick={handlePrev}
-            className={`p-1 rounded-full transition-colors cursor-pointer ${
-              isDarkMode ? 'text-slate-400 hover:text-white hover:bg-white/10' : 'text-slate-500 hover:text-black hover:bg-black/5'
+            className={`p-0.5 rounded-full opacity-40 hover:opacity-100 transition-opacity cursor-pointer ${
+              isDarkMode ? 'text-slate-300' : 'text-slate-600'
             }`}
             title="上一项服务"
             aria-label="上一项服务"
           >
-            <ChevronLeft size={14} />
+            <ChevronLeft size={13} />
           </button>
 
           <div className="flex items-center gap-1.5 px-1">
@@ -1231,14 +1231,14 @@ export const EchoHomeView: React.FC<EchoHomeViewProps> = ({
                     setSlideDirection(idx > currentIndex ? 'down' : 'up');
                     setCurrentIndex(idx);
                   }}
-                  className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                  className={`rounded-full transition-all duration-300 cursor-pointer ${
                     isActive
                       ? isDarkMode
-                        ? 'w-5 bg-white shadow-[0_0_8px_rgba(255,255,255,0.6)]'
-                        : 'w-5 bg-slate-800 shadow-xs'
+                        ? 'w-4 h-1 bg-white/80 shadow-[0_0_6px_rgba(255,255,255,0.4)]'
+                        : 'w-4 h-1 bg-slate-700/80'
                       : isDarkMode
-                        ? 'w-1.5 bg-white/20 hover:bg-white/40'
-                        : 'w-1.5 bg-slate-300 hover:bg-slate-400'
+                        ? 'w-1 h-1 bg-white/20 hover:bg-white/40'
+                        : 'w-1 h-1 bg-slate-400/35 hover:bg-slate-400/60'
                   }`}
                   aria-label={`切换到推荐服务 ${idx + 1}`}
                 />
@@ -1248,13 +1248,13 @@ export const EchoHomeView: React.FC<EchoHomeViewProps> = ({
 
           <button
             onClick={handleNext}
-            className={`p-1 rounded-full transition-colors cursor-pointer ${
-              isDarkMode ? 'text-slate-400 hover:text-white hover:bg-white/10' : 'text-slate-500 hover:text-black hover:bg-black/5'
+            className={`p-0.5 rounded-full opacity-40 hover:opacity-100 transition-opacity cursor-pointer ${
+              isDarkMode ? 'text-slate-300' : 'text-slate-600'
             }`}
             title="下一项服务"
             aria-label="下一项服务"
           >
-            <ChevronRight size={14} />
+            <ChevronRight size={13} />
           </button>
         </div>
       </div>
