@@ -3,5 +3,8 @@
   "description": "AIRobot ECHO，通过Airobot情境化对话，实现用户每次对话都可以被情境感知，自动记录与跟进；支持基于ai时钟、定时器和日程管理、知识播客、事务与笔记等全方位自动生成，跟进服务。",
   "requestFramePermissions": [
     "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
   ]
 }

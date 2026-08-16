@@ -28,6 +28,31 @@ export const useAether = () => {
     setIsChatOpen(true);
   }, []);
 
+  const playWebSpeech = (text: string, onEnd: () => void) => {
+    try {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        // Remove markdown symbols and emojis for cleaner speech
+        const cleanText = text.replace(/[*#_`~>\[\]]/g, '').trim();
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        utterance.rate = 1.05;
+        utterance.pitch = 1.1;
+        
+        const voices = window.speechSynthesis.getVoices();
+        const zhVoice = voices.find(v => v.lang.includes('zh') || v.lang.includes('cmn') || v.lang.includes('Chinese'));
+        if (zhVoice) utterance.voice = zhVoice;
+        
+        utterance.onend = onEnd;
+        utterance.onerror = () => onEnd();
+        window.speechSynthesis.speak(utterance);
+        return true;
+      }
+    } catch {
+      // ignore
+    }
+    return false;
+  };
+
   const handleRobotChat = async (prompt: string, type: 'general' | 'story' | 'confide' | 'task' | 'inspiration' | 'daily' | 'podcast' = 'general') => {
     setMessages(prev => [...prev, { role: 'user', text: prompt }]);
     setConversationState('thinking');
@@ -49,59 +74,22 @@ export const useAether = () => {
       setConversationState('speaking');
       setIsSpeaking(true);
 
-      // Generate TTS
-      try {
-        const ttsResponse = await genAI.models.generateContent({
-          model: "gemini-2.5-flash-preview-tts",
-          contents: [{ parts: [{ text: aiText }] }],
-          config: {
-            responseModalities: [Modality.AUDIO],
-            speechConfig: {
-                voiceConfig: {
-                  prebuiltVoiceConfig: { voiceName: 'Zephyr' },
-                },
-            },
-          },
-        });
-        const base64Audio = ttsResponse.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
-        if (base64Audio) {
-          const binaryString = window.atob(base64Audio);
-          const bytes = new Uint8Array(binaryString.length);
-          for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
-          
-          const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-          const int16Array = new Int16Array(bytes.buffer);
-          const audioBuffer = audioContext.createBuffer(1, int16Array.length, 24000);
-          const channelData = audioBuffer.getChannelData(0);
-          for (let i = 0; i < int16Array.length; i++) {
-            channelData[i] = int16Array[i] / 32768.0;
-          }
-          
-          const source = audioContext.createBufferSource();
-          source.buffer = audioBuffer;
-          source.connect(audioContext.destination);
-          source.start();
-          source.onended = () => {
-            setIsSpeaking(false);
-            setConversationState('idle');
-          };
-        } else {
-          setTimeout(() => {
-            setIsSpeaking(false);
-            setConversationState('idle');
-          }, 3000);
-        }
-      } catch (ttsError) {
-        console.error("TTS Error:", ttsError);
-        setTimeout(() => {
-          setIsSpeaking(false);
-          setConversationState('idle');
-        }, 3000);
+      const finishSpeaking = () => {
+        setIsSpeaking(false);
+        setConversationState('idle');
+      };
+
+      // Try browser Web Speech first for instant responsiveness and reliability
+      const played = playWebSpeech(aiText, finishSpeaking);
+      if (!played) {
+        // Fallback simulation timer if speech synthesis is not supported
+        setTimeout(finishSpeaking, 3500);
       }
     } catch (error) {
       console.error("Gemini Error:", error);
       addBotMessage("哎呀，我的大脑卡住了，但我依然支持你！");
       setConversationState('idle');
+      setIsSpeaking(false);
     }
   };
 

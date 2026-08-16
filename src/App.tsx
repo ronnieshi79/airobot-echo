@@ -46,7 +46,7 @@ import { HomeMenu } from './components/HomeMenu';
 import { AlarmView, TimeView, useClock } from './clock';
 import { AiRobot, AetherRobot, useAether } from './airobot';
 import { useSchedule, TodayView, CalendarView, ScheduleView } from './schedule';
-import { useEcho, EchoHomeView, EchoSessionView, EchoHistoryView } from './echo';
+import { useEcho, EchoHomeView, EchoSessionView, EchoHistoryView, ServiceCard } from './echo';
 import { MainCategory, SubCategory, ScheduleItem, Message, AlarmItem, ActiveCard } from './types';
 import { SubCategoryDial } from './components/SubCategoryDial';
 import { SkeuomorphicDial } from './components/SkeuomorphicDial';
@@ -62,6 +62,7 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [contextMode, setContextMode] = useState<ContextType>('auto');
   const [dayTypeMode, setDayTypeMode] = useState<'auto' | 'workday' | 'weekend'>('auto');
+  const [activeRecommendedCard, setActiveRecommendedCard] = useState<ServiceCard | null>(null);
   
   // AI Robot Module
   const {
@@ -602,6 +603,7 @@ export default function App() {
                   isDarkMode={isDarkMode}
                   subCategory={subCategory}
                   time={time}
+                  onActiveCardChange={setActiveRecommendedCard}
                   onViewHistory={() => setSubCategory('echo-history')}
                   onStartSession={(type, content) => {
                     startNewSession(type);
@@ -829,7 +831,7 @@ export default function App() {
               )}
             </AnimatePresence>
 
-            <div className={`flex flex-col items-center gap-6 relative ${isChatOpen ? 'hidden' : 'flex'}`}>
+            <div className={`flex flex-col items-center gap-2 relative ${isChatOpen ? 'hidden' : 'flex'}`}>
               <AiRobot 
                 isSpeaking={isSpeaking}
                 isBlinking={isBlinking}
@@ -842,42 +844,85 @@ export default function App() {
                 size="lg"
               />
 
-            {!isChatOpen && (
-              <div className="flex flex-col items-center gap-4">
-                <motion.button 
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={isVoiceActive ? stopVoiceMode : startVoiceMode}
-                  className="flex flex-col items-center gap-4 cursor-pointer group"
-                >
-                  <div className="flex gap-2 items-center justify-center h-12">
-                    {[1, 2, 3, 4, 5].map(i => (
-                      <motion.div 
-                        key={i}
-                        animate={isVoiceActive ? { 
-                          height: [8, i === 3 ? 32 : (i === 2 || i === 4 ? 24 : 16), 8],
-                          opacity: 1
-                        } : { 
-                          height: [4, 6, 4],
-                          opacity: 0.6
-                        }}
-                        transition={{ 
-                          repeat: Infinity, 
-                          duration: isVoiceActive ? 0.6 : 3, 
-                          delay: i * 0.12,
-                          ease: "easeInOut"
-                        }}
-                        className={`w-1.5 rounded-full shadow-[0_0_15px_rgba(34,211,238,0.4)] ${isVoiceActive ? 'bg-cyan-400' : 'bg-cyan-400/40'}`}
-                      />
-                    ))}
-                  </div>
-                  <span className={`text-[10px] font-black tracking-[0.3em] uppercase ${isDarkMode ? 'text-cyan-400/60' : 'text-cyan-500/60'}`}>
-                    叫名字对话
-                  </span>
-                </motion.button>
-              </div>
-            )}
-          </div>
+              {!isChatOpen && (
+                <>
+                  <motion.button 
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={isVoiceActive ? stopVoiceMode : startVoiceMode}
+                    className="flex flex-col items-center gap-2 mt-1 cursor-pointer group"
+                  >
+                    <div className="flex gap-2 items-center justify-center h-4">
+                      {[1, 2, 3, 4, 5].map(i => (
+                        <motion.div 
+                          key={i}
+                          animate={isVoiceActive ? { 
+                            scaleY: [1, i === 3 ? 3.5 : (i === 2 || i === 4 ? 2.6 : 1.8), 1],
+                            opacity: 1
+                          } : { 
+                            scale: [1, 1.25, 1],
+                            opacity: [0.8, 1, 0.8]
+                          }}
+                          transition={{ 
+                            repeat: Infinity, 
+                            duration: isVoiceActive ? 0.6 : 2.5, 
+                            delay: i * 0.12,
+                            ease: "easeInOut"
+                          }}
+                          className={`w-2 h-2 rounded-full shadow-[0_0_10px_rgba(56,189,248,0.5)] transition-colors ${
+                            isVoiceActive 
+                              ? 'bg-sky-400' 
+                              : (isDarkMode ? 'bg-sky-400/80' : 'bg-sky-400')
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <span className={`text-xs font-bold tracking-wider ${
+                      isDarkMode ? 'text-sky-400/90' : 'text-sky-500'
+                    }`}>
+                      叫名字对话
+                    </span>
+                  </motion.button>
+
+                  {/* Contextual Prompt Capsule Linked to Active Recommendation */}
+                  {activeRecommendedCard && (
+                    <motion.div
+                      key={activeRecommendedCard.id}
+                      initial={{ opacity: 0, y: 6, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -6, scale: 0.96 }}
+                      transition={{ duration: 0.3 }}
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={() => {
+                        if (!isChatOpen) setIsChatOpen(true);
+                        if (!isVoiceActive) startVoiceMode();
+                        handleRobotChat(activeRecommendedCard.initialPrompt, activeRecommendedCard.type);
+                      }}
+                      className={`mt-1.5 max-w-[230px] w-full px-3 py-2 rounded-2xl cursor-pointer transition-all border flex items-center gap-2 shadow-xs group ${
+                        isDarkMode 
+                          ? 'bg-slate-900/70 border-white/10 hover:bg-slate-800/90 hover:border-white/20' 
+                          : 'bg-white/80 border-black/5 hover:bg-white hover:border-black/15 shadow-xs'
+                      }`}
+                    >
+                      <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 shadow-xs ${
+                        isDarkMode ? 'bg-sky-500/20 text-sky-300' : 'bg-sky-100 text-sky-600'
+                      }`}>
+                        <Sparkles size={11} className="animate-pulse" />
+                      </div>
+                      <p className={`text-[11px] font-medium leading-tight truncate flex-1 text-left ${
+                        isDarkMode ? 'text-slate-300 group-hover:text-white' : 'text-slate-600 group-hover:text-slate-900'
+                      }`}>
+                        "{activeRecommendedCard.initialPrompt}"
+                      </p>
+                      <div className="shrink-0 text-sky-400 group-hover:text-sky-500">
+                        <Mic size={11} />
+                      </div>
+                    </motion.div>
+                  )}
+                </>
+              )}
+            </div>
         </div>
       </div>
     </div>

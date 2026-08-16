@@ -31,15 +31,15 @@ export const AiRobot: React.FC<AiRobotProps> = ({
   size = 'lg',
   className = '',
 }) => {
-  // Local blink timer if external isBlinking isn't actively cycling
+  // Local blink timer
   const [localBlink, setLocalBlink] = useState(false);
   const [isInteracted, setIsInteracted] = useState(false);
 
   useEffect(() => {
     const blinkInterval = setInterval(() => {
       setLocalBlink(true);
-      setTimeout(() => setLocalBlink(false), 160);
-    }, 3800 + Math.random() * 2000);
+      setTimeout(() => setLocalBlink(false), 180);
+    }, 3600 + Math.random() * 2400);
     return () => clearInterval(blinkInterval);
   }, []);
 
@@ -59,7 +59,7 @@ export const AiRobot: React.FC<AiRobotProps> = ({
       scale: 0.58,
     },
     lg: {
-      container: 'w-[250px] h-[250px] sm:w-[270px] sm:h-[270px]',
+      container: 'w-[230px] h-[230px] sm:w-[250px] sm:h-[250px]',
       scale: 1,
     }
   }[size];
@@ -76,29 +76,29 @@ export const AiRobot: React.FC<AiRobotProps> = ({
       animate={{ 
         scale: 1, 
         opacity: 1,
-        y: effectiveSpeaking ? [0, -6, 0] : [0, -8, 0],
-        rotate: effectiveListening ? [0, 2, -2, 0] : (effectiveThinking ? [0, -1.5, 0] : [0, 0.8, -0.8, 0])
+        y: effectiveSpeaking ? [0, -4, 0] : [0, -6, 0],
+        rotate: effectiveListening ? [0, 1.5, -1.5, 0] : (effectiveThinking ? [0, -1, 0] : [0, 0.6, -0.6, 0])
       }}
       transition={{ 
         scale: { duration: 0.4 },
         opacity: { duration: 0.4 },
-        y: { repeat: Infinity, duration: effectiveSpeaking ? 1.4 : 3.6, ease: "easeInOut" },
-        rotate: { repeat: Infinity, duration: effectiveListening ? 2.5 : 4.5, ease: "easeInOut" }
+        y: { repeat: Infinity, duration: effectiveSpeaking ? 1.4 : 3.8, ease: "easeInOut" },
+        rotate: { repeat: Infinity, duration: effectiveListening ? 2.5 : 5, ease: "easeInOut" }
       }}
-      whileHover={{ scale: 1.06 }}
-      whileTap={{ scale: 0.94 }}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
       onClick={handleClick}
       className={`relative cursor-pointer select-none flex flex-col items-center justify-center ${dimensionConfig.container} ${className}`}
     >
-      {/* 1. Outer Concentric Voice/Listening Pulsing Rings */}
+      {/* 1. Outer Voice Waves on Active Mode */}
       <AnimatePresence>
         {(effectiveListening || effectiveSpeaking) && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
             {[1, 2, 3].map(i => (
               <motion.div 
                 key={i}
-                initial={{ scale: 0.8, opacity: 0.7 }}
-                animate={{ scale: 1.4 + i * 0.25, opacity: 0 }}
+                initial={{ scale: 0.85, opacity: 0.6 }}
+                animate={{ scale: 1.35 + i * 0.22, opacity: 0 }}
                 exit={{ opacity: 0 }}
                 transition={{ 
                   repeat: Infinity, 
@@ -106,10 +106,10 @@ export const AiRobot: React.FC<AiRobotProps> = ({
                   delay: (i - 1) * 0.6, 
                   ease: "easeOut" 
                 }}
-                className={`absolute w-full h-full rounded-full border-2 ${
+                className={`absolute w-full h-full rounded-[3.5rem] border-2 ${
                   effectiveSpeaking 
                     ? 'border-pink-400/40' 
-                    : 'border-cyan-400/50'
+                    : 'border-cyan-400/45'
                 }`}
               />
             ))}
@@ -117,188 +117,232 @@ export const AiRobot: React.FC<AiRobotProps> = ({
         )}
       </AnimatePresence>
 
-      {/* 2. Precision SVG IP Character (Exact match to 图1 猫耳圆球白团子形象) */}
-      <div className="relative w-full h-full flex items-center justify-center z-10 filter drop-shadow-[0_15px_35px_rgba(0,0,0,0.15)] dark:drop-shadow-[0_20px_45px_rgba(0,0,0,0.6)]">
+      {/* 2. Precision SVG IP Character (参考图2：圆润厚耳、软萌Squircle方包子脸、立体腮红球与生动大萌眼) */}
+      <div className="relative w-full h-full flex items-center justify-center z-10 filter drop-shadow-[0_16px_35px_rgba(235,185,160,0.22)] dark:drop-shadow-[0_20px_45px_rgba(0,0,0,0.65)]">
         <svg 
           viewBox="0 0 240 240" 
           className="w-full h-full overflow-visible"
           xmlns="http://www.w3.org/2000/svg"
         >
           <defs>
-            {/* Soft Ambient Body Radial Gradient */}
-            <radialGradient id="bodyGradient" cx="45%" cy="38%" r="62%">
+            {/* 3D Soft Squircle Face Gradient (奶白向暖杏温润渐变) */}
+            <radialGradient id="squircleFaceGrad" cx="50%" cy="38%" r="65%">
               <stop offset="0%" stopColor="#FFFFFF" />
-              <stop offset="65%" stopColor="#FFFDF9" />
-              <stop offset="88%" stopColor="#F9F4EB" />
-              <stop offset="100%" stopColor="#EFE7DA" />
+              <stop offset="60%" stopColor="#FFFDF9" />
+              <stop offset="85%" stopColor="#FFF4E6" />
+              <stop offset="100%" stopColor="#F9E8D6" />
             </radialGradient>
 
-            {/* Inner Ear Translucent Pink Gradient */}
-            <linearGradient id="earInnerGradient" x1="0%" y1="100%" x2="0%" y2="0%">
-              <stop offset="0%" stopColor="#FFF2F5" stopOpacity="0.3" />
-              <stop offset="60%" stopColor="#FFDEE7" stopOpacity="0.85" />
-              <stop offset="100%" stopColor="#FFC9D8" stopOpacity="0.95" />
+            {/* Inner Ear Soft Peach Gradient (柔嫩粉桃渐变) */}
+            <linearGradient id="earInnerPeachGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stopColor="#FFF0F3" stopOpacity="0.25" />
+              <stop offset="50%" stopColor="#FFDEE7" stopOpacity="0.85" />
+              <stop offset="100%" stopColor="#FFCCD8" stopOpacity="0.95" />
             </linearGradient>
 
-            {/* Rosy Blush Blur Filter */}
-            <radialGradient id="blushGradient" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#FF4B7E" stopOpacity={effectiveSpeaking || isInteracted ? "0.85" : "0.65"} />
-              <stop offset="50%" stopColor="#FF6B97" stopOpacity={effectiveSpeaking || isInteracted ? "0.45" : "0.3"} />
-              <stop offset="100%" stopColor="#FF8DAE" stopOpacity="0" />
+            {/* Outer Ear Warm Base Gradient */}
+            <linearGradient id="earOuterGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stopColor="#FAF1E6" />
+              <stop offset="100%" stopColor="#FFFFFF" />
+            </linearGradient>
+
+            {/* Rosy Cheek Blush Soft Diffuse Gradient */}
+            <radialGradient id="blushPeachGrad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#FF4680" stopOpacity={effectiveSpeaking || isInteracted ? "0.9" : "0.72"} />
+              <stop offset="45%" stopColor="#FF6B98" stopOpacity={effectiveSpeaking || isInteracted ? "0.55" : "0.38"} />
+              <stop offset="75%" stopColor="#FFA0BC" stopOpacity={effectiveSpeaking || isInteracted ? "0.2" : "0.1"} />
+              <stop offset="100%" stopColor="#FFA0BC" stopOpacity="0" />
             </radialGradient>
 
-            {/* Side Pom-Pom Shadow */}
-            <filter id="pompomShadow" x="-30%" y="-30%" width="160%" height="160%">
-              <feDropShadow dx="0" dy="4" stdDeviation="4" floodColor="#000000" floodOpacity="0.12" />
+            {/* Cheek Pom-Pom Drop Shadow */}
+            <filter id="pompomSoftShadow" x="-35%" y="-35%" width="170%" height="170%">
+              <feDropShadow dx="0" dy="3.5" stdDeviation="3.5" floodColor="#D4A790" floodOpacity="0.28" />
             </filter>
 
-            {/* Glow Outer Rim */}
-            <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="3" result="blur" />
-              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            {/* Outer Soft Squircle Body Shadow */}
+            <filter id="bodyAmbientGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="8" stdDeviation="12" floodColor="#E8C3B0" floodOpacity="0.3" />
             </filter>
           </defs>
 
-          {/* 3. Cat Ears (Top Left & Top Right) */}
-          <g id="cat-ears">
-            {/* Left Cat Ear */}
+          {/* 3. Soft Rounded Thick Ears (图2：大圆弧兔猫软耳，耳尖圆润厚实，带半透高光) */}
+          <g id="soft-ears">
+            {/* Left Ear */}
             <motion.g
               animate={
                 effectiveListening 
-                  ? { rotate: [-2, 3, -2], y: [0, -2, 0] } 
+                  ? { rotate: [-2.5, 3, -2.5], y: [0, -2, 0] } 
                   : (effectiveSpeaking ? { rotate: [0, -3, 0], y: [0, -1, 0] } : { rotate: 0, y: 0 })
               }
               transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-              style={{ transformOrigin: "68px 75px" }}
+              style={{ transformOrigin: "80px 85px" }}
             >
-              {/* Outer Ear White Base */}
+              {/* Outer Ear Curved Pill Path */}
               <path
-                d="M 52 92 C 42 62, 54 36, 68 28 C 84 38, 92 64, 88 88 Z"
-                fill="#FFFDFB"
+                d="M 64 96 C 50 68, 54 38, 76 28 C 96 20, 108 48, 102 90 Z"
+                fill="url(#earOuterGrad)"
                 stroke="#FFFFFF"
-                strokeWidth="4"
+                strokeWidth="5"
                 strokeLinejoin="round"
+                strokeLinecap="round"
               />
-              {/* Inner Ear Soft Pink Area */}
+              {/* Inner Ear Soft Pink Pill Area */}
               <path
-                d="M 57 86 C 50 64, 58 46, 68 38 C 79 46, 83 66, 80 84 Z"
-                fill="url(#earInnerGradient)"
+                d="M 68 90 C 58 66, 62 45, 76 38 C 90 32, 98 52, 94 86 Z"
+                fill="url(#earInnerPeachGrad)"
+              />
+              {/* Ear Translucent Highlight Arc */}
+              <path
+                d="M 63 76 C 60 55, 68 38, 77 32"
+                fill="none"
+                stroke="#FFFFFF"
+                strokeWidth="3.5"
+                strokeLinecap="round"
+                opacity="0.8"
               />
             </motion.g>
 
-            {/* Right Cat Ear */}
+            {/* Right Ear */}
             <motion.g
               animate={
                 effectiveListening 
-                  ? { rotate: [2, -3, 2], y: [0, -2, 0] } 
+                  ? { rotate: [2.5, -3, 2.5], y: [0, -2, 0] } 
                   : (effectiveSpeaking ? { rotate: [0, 3, 0], y: [0, -1, 0] } : { rotate: 0, y: 0 })
               }
               transition={{ repeat: Infinity, duration: 2, delay: 0.1, ease: "easeInOut" }}
-              style={{ transformOrigin: "172px 75px" }}
+              style={{ transformOrigin: "160px 85px" }}
             >
-              {/* Outer Ear White Base */}
+              {/* Outer Ear Curved Pill Path */}
               <path
-                d="M 188 92 C 198 62, 186 36, 172 28 C 156 38, 148 64, 152 88 Z"
-                fill="#FFFDFB"
+                d="M 176 96 C 190 68, 186 38, 164 28 C 144 20, 132 48, 138 90 Z"
+                fill="url(#earOuterGrad)"
                 stroke="#FFFFFF"
-                strokeWidth="4"
+                strokeWidth="5"
                 strokeLinejoin="round"
+                strokeLinecap="round"
               />
-              {/* Inner Ear Soft Pink Area */}
+              {/* Inner Ear Soft Pink Pill Area */}
               <path
-                d="M 183 86 C 190 64, 182 46, 172 38 C 161 46, 157 66, 160 84 Z"
-                fill="url(#earInnerGradient)"
+                d="M 172 90 C 182 66, 178 45, 164 38 C 150 32, 142 52, 146 86 Z"
+                fill="url(#earInnerPeachGrad)"
+              />
+              {/* Ear Translucent Highlight Arc */}
+              <path
+                d="M 177 76 C 180 55, 172 38, 163 32"
+                fill="none"
+                stroke="#FFFFFF"
+                strokeWidth="3.5"
+                strokeLinecap="round"
+                opacity="0.8"
               />
             </motion.g>
           </g>
 
-          {/* 4. Main White Plush Round Body (带纯白厚边框与圆润渐变) */}
-          <g id="main-body">
-            {/* Outer Thick White Rim Glow */}
-            <circle
-              cx="120"
-              cy="125"
-              r="76"
+          {/* 4. Squircle Body / Face (图2：圆角方包子脸，底座不全圆，而是圆润方圆，外带厚白边) */}
+          <g id="squircle-body">
+            {/* Outer Thick White Rim Glow & Squircle Base */}
+            <rect
+              x="45"
+              y="58"
+              width="150"
+              height="136"
+              rx="58"
+              ry="54"
               fill="#FFFFFF"
               stroke="#FFFFFF"
-              strokeWidth="6"
-              filter="url(#softGlow)"
+              strokeWidth="7"
+              filter="url(#bodyAmbientGlow)"
             />
-            {/* Inner Plush Sphere Face */}
-            <circle
-              cx="120"
-              cy="125"
-              r="74"
-              fill="url(#bodyGradient)"
+
+            {/* Inner Soft Cream/Peach Porcelain Face */}
+            <rect
+              x="47"
+              y="60"
+              width="146"
+              height="132"
+              rx="55"
+              ry="51"
+              fill="url(#squircleFaceGrad)"
             />
-            {/* Soft Top Light Arc Reflex */}
-            <ellipse
-              cx="120"
-              cy="70"
-              rx="42"
-              ry="16"
-              fill="#FFFFFF"
-              fillOpacity="0.45"
+
+            {/* Soft Warm Ambient Lighting Reflex along top & bottom */}
+            <path
+              d="M 65 72 Q 120 62 175 72"
+              fill="none"
+              stroke="#FFFFFF"
+              strokeWidth="5"
+              strokeLinecap="round"
+              opacity="0.75"
+            />
+            <path
+              d="M 75 182 Q 120 188 165 182"
+              fill="none"
+              stroke="#FFFFFF"
+              strokeWidth="3.5"
+              strokeLinecap="round"
+              opacity="0.6"
             />
           </g>
 
-          {/* 5. Left & Right Cheek Pom-Poms / Paws (两侧可爱的圆球绒球) */}
+          {/* 5. Left & Right Cheek Pom-Poms / Paws (两侧立体饱满的小球爪爪) */}
           <g id="cheek-pompoms">
             {/* Left Cheek Pom-Pom */}
             <motion.circle
               animate={
                 effectiveSpeaking 
-                  ? { scale: [1, 1.08, 1], x: [0, -1, 0] } 
+                  ? { scale: [1, 1.07, 1], x: [0, -1, 0] } 
                   : { scale: 1, x: 0 }
               }
               transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
-              cx="45"
-              cy="134"
-              r="17"
+              cx="44"
+              cy="135"
+              r="17.5"
               fill="#FFFFFF"
-              stroke="#FFF9F5"
+              stroke="#FFF8F5"
               strokeWidth="2.5"
-              filter="url(#pompomShadow)"
+              filter="url(#pompomSoftShadow)"
             />
             {/* Right Cheek Pom-Pom */}
             <motion.circle
               animate={
                 effectiveSpeaking 
-                  ? { scale: [1, 1.08, 1], x: [0, 1, 0] } 
+                  ? { scale: [1, 1.07, 1], x: [0, 1, 0] } 
                   : { scale: 1, x: 0 }
               }
               transition={{ repeat: Infinity, duration: 1.2, delay: 0.1, ease: "easeInOut" }}
-              cx="195"
-              cy="134"
-              r="17"
+              cx="196"
+              cy="135"
+              r="17.5"
               fill="#FFFFFF"
-              stroke="#FFF9F5"
+              stroke="#FFF8F5"
               strokeWidth="2.5"
-              filter="url(#pompomShadow)"
+              filter="url(#pompomSoftShadow)"
             />
           </g>
 
-          {/* 6. Soft Rosy Blush on Cheeks (红晕小脸蛋) */}
+          {/* 6. Soft Diffuse Rosy Blushes (横向透润大腮红，紧贴眼下与脸侧) */}
           <g id="blushes">
             {/* Left Blush */}
-            <circle
+            <ellipse
               cx="87"
-              cy="137"
-              r="16"
-              fill="url(#blushGradient)"
+              cy="136"
+              rx="18"
+              ry="11.5"
+              fill="url(#blushPeachGrad)"
             />
             {/* Right Blush */}
-            <circle
+            <ellipse
               cx="153"
-              cy="137"
-              r="16"
-              fill="url(#blushGradient)"
+              cy="136"
+              rx="18"
+              ry="11.5"
+              fill="url(#blushPeachGrad)"
             />
           </g>
 
-          {/* 7. Expressive Anime Big Eyes (大黑萌眼 + 标志性高光双白点) */}
+          {/* 7. Expressive Anime Big Obsidian Eyes (生动水润黑曜石大眼，大圆弧双高光) */}
           <g id="eyes">
-            {/* Left Eye Group */}
+            {/* Left Eye */}
             <motion.g
               animate={
                 shouldBlink
@@ -306,7 +350,7 @@ export const AiRobot: React.FC<AiRobotProps> = ({
                   : (isInteracted || (effectiveSpeaking && !effectiveListening)
                     ? { scaleY: 0.95 }
                     : (effectiveThinking
-                      ? { y: [0, -3, 0], x: [0, 1.5, 0] }
+                      ? { y: [0, -2.5, 0], x: [0, 1.5, 0] }
                       : { scaleY: 1, y: 0, x: 0 }))
               }
               transition={
@@ -314,45 +358,54 @@ export const AiRobot: React.FC<AiRobotProps> = ({
                   ? { duration: 0.14, ease: "easeInOut" } 
                   : { duration: 0.3 }
               }
-              style={{ transformOrigin: "86px 112px" }}
+              style={{ transformOrigin: "87px 115px" }}
             >
               {isInteracted ? (
-                /* Happy Curved Crescent Eye */
+                /* Happy Eye Arc */
                 <path
-                  d="M 72 116 C 76 102, 96 102, 100 116"
+                  d="M 73 120 C 77 106, 97 106, 101 120"
                   fill="none"
-                  stroke="#1A1818"
-                  strokeWidth="5"
+                  stroke="#1D212A"
+                  strokeWidth="5.5"
                   strokeLinecap="round"
                 />
               ) : (
                 <>
-                  {/* Black Eye Ball */}
+                  {/* Black Obsidian Eye Ball */}
                   <circle
-                    cx="86"
-                    cy="112"
-                    r="16.5"
-                    fill="#151414"
+                    cx="87"
+                    cy="115"
+                    r="16.8"
+                    fill="#1C212D"
                   />
-                  {/* Main Big White Highlight (Top-Left) */}
+                  {/* Bottom Soft Navy Light Reflex */}
+                  <ellipse
+                    cx="87"
+                    cy="126"
+                    rx="8"
+                    ry="3.5"
+                    fill="#3B4459"
+                    opacity="0.5"
+                  />
+                  {/* Main Big Round Gloss Highlight (Top-Left) */}
                   <circle
-                    cx="80.5"
-                    cy="106.5"
+                    cx="81.5"
+                    cy="109"
                     r="5.8"
                     fill="#FFFFFF"
                   />
-                  {/* Secondary Small White Highlight (Bottom-Right) */}
+                  {/* Secondary Small Round Gloss Highlight (Bottom-Right) */}
                   <circle
-                    cx="92.5"
-                    cy="118.5"
-                    r="3.2"
+                    cx="93.5"
+                    cy="121"
+                    r="3.4"
                     fill="#FFFFFF"
                   />
                 </>
               )}
             </motion.g>
 
-            {/* Right Eye Group */}
+            {/* Right Eye */}
             <motion.g
               animate={
                 shouldBlink
@@ -360,7 +413,7 @@ export const AiRobot: React.FC<AiRobotProps> = ({
                   : (isInteracted || (effectiveSpeaking && !effectiveListening)
                     ? { scaleY: 0.95 }
                     : (effectiveThinking
-                      ? { y: [0, -3, 0], x: [0, 1.5, 0] }
+                      ? { y: [0, -2.5, 0], x: [0, 1.5, 0] }
                       : { scaleY: 1, y: 0, x: 0 }))
               }
               transition={
@@ -368,38 +421,47 @@ export const AiRobot: React.FC<AiRobotProps> = ({
                   ? { duration: 0.14, ease: "easeInOut" } 
                   : { duration: 0.3 }
               }
-              style={{ transformOrigin: "154px 112px" }}
+              style={{ transformOrigin: "153px 115px" }}
             >
               {isInteracted ? (
-                /* Happy Curved Crescent Eye */
+                /* Happy Eye Arc */
                 <path
-                  d="M 140 116 C 144 102, 164 102, 168 116"
+                  d="M 139 120 C 143 106, 163 106, 167 120"
                   fill="none"
-                  stroke="#1A1818"
-                  strokeWidth="5"
+                  stroke="#1D212A"
+                  strokeWidth="5.5"
                   strokeLinecap="round"
                 />
               ) : (
                 <>
-                  {/* Black Eye Ball */}
+                  {/* Black Obsidian Eye Ball */}
                   <circle
-                    cx="154"
-                    cy="112"
-                    r="16.5"
-                    fill="#151414"
+                    cx="153"
+                    cy="115"
+                    r="16.8"
+                    fill="#1C212D"
                   />
-                  {/* Main Big White Highlight (Top-Left) */}
+                  {/* Bottom Soft Navy Light Reflex */}
+                  <ellipse
+                    cx="153"
+                    cy="126"
+                    rx="8"
+                    ry="3.5"
+                    fill="#3B4459"
+                    opacity="0.5"
+                  />
+                  {/* Main Big Round Gloss Highlight (Top-Left) */}
                   <circle
-                    cx="148.5"
-                    cy="106.5"
+                    cx="147.5"
+                    cy="109"
                     r="5.8"
                     fill="#FFFFFF"
                   />
-                  {/* Secondary Small White Highlight (Bottom-Right) */}
+                  {/* Secondary Small Round Gloss Highlight (Bottom-Right) */}
                   <circle
-                    cx="160.5"
-                    cy="118.5"
-                    r="3.2"
+                    cx="159.5"
+                    cy="121"
+                    r="3.4"
                     fill="#FFFFFF"
                   />
                 </>
@@ -407,44 +469,44 @@ export const AiRobot: React.FC<AiRobotProps> = ({
             </motion.g>
           </g>
 
-          {/* 8. Mouth (小横线/说话开合/微笑) */}
+          {/* 8. Mouth (精致微小横线 / 开合呼吸) */}
           <g id="mouth">
             {effectiveSpeaking ? (
               <motion.ellipse
                 animate={{
-                  rx: [3.5, 5.5, 3.5, 6, 3.5],
-                  ry: [2, 4.5, 2, 5, 2]
+                  rx: [3.2, 5.2, 3.2, 5.8, 3.2],
+                  ry: [2, 4.2, 2, 4.8, 2]
                 }}
                 transition={{ repeat: Infinity, duration: 0.7, ease: "easeInOut" }}
                 cx="120"
-                cy="142"
-                fill="#3A3838"
+                cy="140"
+                fill="#3C3B3D"
               />
             ) : isInteracted ? (
               <path
-                d="M 114 140 Q 120 146 126 140"
+                d="M 114 138 Q 120 144 126 138"
                 fill="none"
-                stroke="#3A3838"
+                stroke="#3C3B3D"
                 strokeWidth="2.8"
                 strokeLinecap="round"
               />
             ) : effectiveListening ? (
               <ellipse
                 cx="120"
-                cy="141.5"
+                cy="139.5"
                 rx="3.5"
-                ry="2.5"
-                fill="#3A3838"
+                ry="2.4"
+                fill="#3C3B3D"
               />
             ) : (
-              /* Idle Delicate Small Line Mouth (一字萌嘴) */
+              /* Idle Delicate Small Line Mouth (图2：微小精致小横线) */
               <line
-                x1="113"
-                y1="141"
-                x2="127"
-                y2="141"
-                stroke="#3A3838"
-                strokeWidth="2.6"
+                x1="114"
+                y1="139"
+                x2="126"
+                y2="139"
+                stroke="#3C3B3D"
+                strokeWidth="2.8"
                 strokeLinecap="round"
               />
             )}

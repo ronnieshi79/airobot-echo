@@ -69,40 +69,40 @@ export const EchoSessionView: React.FC<EchoSessionViewProps> = ({
       desc: '职场焦虑、生活烦恼，这里是你安全的树洞，随时倾听你的心声。'
     },
     task: {
-      title: '事务记录',
+      title: '日程规划与提醒',
       icon: <ListTodo size={24} className="text-emerald-600" />,
-      prompts: ["今天有什么重要的待办事项？", "把你的计划告诉我，我帮你记录。", "有什么需要备忘的细节吗？"],
+      prompts: ["今天有什么重要的待办事项？", "把你的日程告诉我，我帮你规划并设置提醒。", "需要梳理 Standup 站会或会议清单吗？"],
       color: 'bg-emerald-500',
       textColor: 'text-emerald-500',
       spineColor: 'bg-[#3A755A]', // Muted earthy green
-      desc: '会议纪要、待办事项、日程安排，一句话帮你高效梳理工作。'
+      desc: 'Standup 站会排期、会议提醒、今日核心任务规划与下班复盘，一句话高效梳理。'
     },
     inspiration: {
-      title: '灵感时刻',
+      title: '专注计时与心流',
       icon: <Brain size={24} className="text-indigo-600" />,
-      prompts: ["捕捉每一个闪光的念头。", "你的创意非常棒，继续说下去！", "让我们来一场头脑风暴吧。"],
+      prompts: ["准备开启一段深度心流番茄钟吗？", "手冲咖啡注水计时已就绪。", "让我们开启一段高效专注心流吧。"],
       color: 'bg-indigo-500',
       textColor: 'text-indigo-500',
       spineColor: 'bg-[#40437A]', // Muted earthy indigo
-      desc: '捕捉转瞬即逝的创意火花，头脑风暴的好帮手，让点子落地。'
+      desc: '深度编码番茄钟、手冲咖啡计时、学习与兴趣创作心流，助你心无旁骛。'
     },
     daily: {
-      title: '每日一记',
+      title: '健康拉伸与冥想',
       icon: <PenLine size={24} className="text-amber-600" />,
-      prompts: ["今天经历了什么美好的事情吗？", "有什么想记录下来的瞬间？", "今天的心情如何？让我们记录下来。"],
+      prompts: ["工位坐久了吗？来做一组 5 分钟肩颈拉伸吧。", "准备好开启一段身心冥想呼吸了吗？", "今天想做一段瑜伽拉伸还是记录心得？"],
       color: 'bg-amber-500',
       textColor: 'text-amber-600',
       spineColor: 'bg-[#B45309]', // Earthy amber/brown
-      desc: '记录每日小确幸与感悟，留住生活温度，让每一天都值得回味。'
+      desc: '久坐工位拉伸、5分钟正念微冥想、瑜伽舒展与日常心得沉淀。'
     },
     podcast: {
-      title: '治愈播客',
+      title: '音乐资讯与播客',
       icon: <Headphones size={24} className="text-purple-600" />,
-      prompts: ["欢迎收听今天的晚间播客，想聊点什么？", "为你精选了一段轻松的旅途故事。", "今天的治愈电台已经为你准备好。"],
+      prompts: ["欢迎收听今日轻播客，想听科技前沿还是治愈故事？", "写代码心流 Lo-Fi 音乐已为你准备好。", "深夜白噪音与舒缓声景正在伴播。"],
       color: 'bg-purple-500',
       textColor: 'text-purple-600',
       spineColor: 'bg-[#5B3A75]', // Muted earthy purple
-      desc: '随身声优讲述治愈系旅行与生活纪事，带走一天沉重。'
+      desc: '通勤科技早报、办公心流 Lo-Fi 伴奏、治愈轻播客与深夜白噪音。'
     }
   };
 
