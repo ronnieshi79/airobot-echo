@@ -18,7 +18,7 @@ export const FunctionalModulePlate: React.FC<FunctionalModulePlateProps> = ({
     <motion.div 
       initial={{ opacity: 0, scale: 0.9, y: 20 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
-      className={`w-full max-w-[640px] h-[725px] p-7 sm:p-8 rounded-[3.5rem] overflow-hidden transition-all duration-500 relative border ${
+      className={`w-full max-w-[940px] h-[730px] p-7 sm:p-9 rounded-[3.5rem] overflow-hidden transition-all duration-500 relative border ${
         isDarkMode 
           ? 'bg-slate-900/85 border-white/10 shadow-[0_30px_90px_rgba(0,0,0,0.7)]' 
           : 'bg-white/90 border-black/5 shadow-[0_30px_90px_rgba(0,0,0,0.08)]'

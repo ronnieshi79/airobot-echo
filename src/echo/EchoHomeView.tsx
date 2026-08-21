@@ -878,6 +878,46 @@ export const EchoHomeView: React.FC<EchoHomeViewProps> = ({
   const activeTheme = activeProfile.theme;
   const cards = activeProfile.cards;
 
+  // Dynamically extract unique categories from current active cards
+  const activeCategories = useMemo(() => {
+    const categoryMetaMap: Record<string, { label: string; icon: React.ReactNode }> = {
+      podcast: {
+        label: '音乐/资讯/学习播客',
+        icon: <Radio size={11} className="text-purple-400" />
+      },
+      focus: {
+        label: 'AI 计时/闹钟提醒',
+        icon: <Timer size={11} className="text-emerald-400" />
+      },
+      schedule: {
+        label: 'AI 日程规划与提醒',
+        icon: <CalendarCheck size={11} className="text-blue-400" />
+      }
+    };
+
+    const seen = new Set<string>();
+    const list: { key: string; label: string; icon: React.ReactNode; firstCardIndex: number }[] = [];
+
+    cards.forEach((card, idx) => {
+      const catKey = card.serviceCategory || (card.type === 'podcast' || card.type === 'story' ? 'podcast' : card.type === 'task' ? 'schedule' : 'focus');
+      if (!seen.has(catKey)) {
+        seen.add(catKey);
+        const meta = categoryMetaMap[catKey] || {
+          label: card.categoryBadge || '智能服务',
+          icon: <Sparkles size={11} className="text-indigo-400" />
+        };
+        list.push({
+          key: catKey,
+          label: meta.label,
+          icon: meta.icon,
+          firstCardIndex: idx
+        });
+      }
+    });
+
+    return list;
+  }, [cards]);
+
   // Reset index when profile changes
   useEffect(() => {
     setCurrentIndex(0);
@@ -952,107 +992,80 @@ export const EchoHomeView: React.FC<EchoHomeViewProps> = ({
   };
 
   return (
-    <div className="relative w-full h-full flex flex-col justify-between select-none p-1 sm:p-2">
+    <div className="relative w-full flex flex-col items-center justify-center select-none py-2 px-2">
 
-      {/* 1. Deep Ambient Aura Lights */}
-      <div className="absolute -inset-6 pointer-events-none -z-0 overflow-hidden">
-        <motion.div 
-          animate={{
-            scale: [1, 1.15, 1],
-            opacity: [0.35, 0.55, 0.35]
-          }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -top-12 -left-12 w-88 h-88 rounded-full blur-[85px]"
-          style={{ backgroundColor: activeTheme.glowColor1 }}
-        />
-        <motion.div 
-          animate={{
-            scale: [1.15, 1, 1.15],
-            opacity: [0.25, 0.45, 0.25]
-          }}
-          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -bottom-12 -right-12 w-88 h-88 rounded-full blur-[75px]"
-          style={{ backgroundColor: activeTheme.glowColor2 }}
-        />
-      </div>
-
-      {/* 2. Header: Fixed Brand AI Echo & Slogan with Context Badges */}
-      <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shrink-0 pt-1 w-full border-b border-black/5 dark:border-white/5 pb-2.5">
-        {/* Left: Fixed App Brand Logo, Name & Slogan */}
-        <div className="flex items-center gap-3 min-w-0">
-          <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-sm transition-all duration-500 ${
-            isDarkMode 
-              ? 'bg-gradient-to-br from-indigo-500/30 to-purple-600/30 border border-indigo-400/30 text-indigo-300 shadow-[0_0_15px_rgba(99,102,241,0.2)]' 
-              : 'bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-200/80 text-indigo-600 shadow-[0_2px_10px_rgba(99,102,241,0.08)]'
-          }`}>
-            <Sparkles size={19} className="animate-pulse" />
-          </div>
-
-          <div className="flex flex-col min-w-0">
-            <div className="flex items-center gap-2">
-              <span className={`text-base sm:text-lg font-black tracking-tight ${
-                isDarkMode ? 'text-white' : 'text-slate-900'
-              }`}>
-                AI Echo
-              </span>
-              <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full font-bold uppercase tracking-wider border ${
-                isDarkMode ? 'bg-white/5 border-white/10 text-slate-400' : 'bg-slate-100 border-slate-200 text-slate-500'
-              }`}>
-                Agentic
-              </span>
-            </div>
-            
-            <p className={`text-xs font-medium tracking-wide ${
-              isDarkMode ? 'text-slate-400' : 'text-slate-500'
-            }`}>
-              你的每次需求，皆有温暖回响
-            </p>
-          </div>
-        </div>
-
-        {/* Right: Preserved Dynamic Context Badges */}
-        <div className="flex items-center flex-wrap gap-1.5 self-start sm:self-auto">
-          {/* Day Mode Badge */}
-          <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold flex items-center gap-1.5 shrink-0 border transition-all ${
-            isWeekend 
-              ? 'bg-teal-500/10 text-teal-600 dark:text-teal-300 border-teal-500/30 shadow-xs' 
-              : 'bg-blue-500/10 text-blue-600 dark:text-blue-300 border-blue-500/30 shadow-xs'
-          }`}>
-            {isWeekend ? <Palmtree size={12} /> : <Laptop size={12} />}
-            <span>{isWeekend ? '周末休闲' : '职场办公'}</span>
-          </span>
-
-          {/* Time Context Badge */}
-          <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold flex items-center gap-1.5 shrink-0 border transition-all ${
-            isDarkMode 
-              ? `${activeTheme.badgeBgDark} ${activeTheme.badgeTextDark}` 
-              : `${activeTheme.badgeBgLight} ${activeTheme.badgeTextLight}`
-          }`}>
-            {activeProfile.badgeIcon}
-            <span>{activeProfile.label}</span>
-          </span>
-
-          {/* Time range snippet */}
-          <span className={`text-[10px] font-mono px-2 py-0.8 rounded-md border hidden md:inline-block ${
-            isDarkMode ? 'bg-white/5 border-white/10 text-slate-400' : 'bg-slate-50 border-slate-200/80 text-slate-500'
-          }`}>
-            {activeProfile.timeRange}
-          </span>
-        </div>
-      </div>
-
-      {/* 3. Center Atmospheric Section: Portrait-Oriented Vertical Rectangular Widget */}
+      {/* Center Atmospheric Section: Layered Stack Carousel Widget directly on the canvas */}
       <div 
         className="relative z-10 my-auto py-2 w-full flex flex-col items-center justify-center"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onWheel={handleWheel}
       >
-        {/* Centered Portrait Widget + Right Vertical Indicator Bar */}
-        <div className="flex items-center justify-center gap-3 sm:gap-4">
+        {/* Layered Multi-Card Stage (Refined cards with pure peek overlay effect) */}
+        <div className="relative w-full max-w-[700px] h-[370px] sm:h-[385px] flex items-center justify-center">
 
-          {/* Portrait-Oriented Service Widget Card (Vertical Rectangle) */}
-          <div className="relative w-[300px] sm:w-[325px] h-[370px] sm:h-[390px] rounded-[2rem] overflow-hidden shadow-[0_12px_36px_-6px_rgba(0,0,0,0.06)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.4)] border border-black/[0.04] dark:border-white/[0.08] transition-all duration-300">
+          {/* Left Peeking Card (Previous card peek on the left) */}
+          {(() => {
+            const prevIndex = (currentIndex - 1 + cards.length) % cards.length;
+            const prevCard = cards[prevIndex];
+            return (
+              <motion.div
+                key={`peek-prev-${prevCard.id}`}
+                initial={{ opacity: 0, x: -60, scale: 0.82 }}
+                animate={{ opacity: 0.45, x: -175, scale: 0.86 }}
+                transition={{ duration: 0.35, ease: 'easeOut' }}
+                onClick={handlePrev}
+                className={`hidden sm:flex absolute w-[260px] md:w-[280px] h-[330px] rounded-[2rem] p-5 flex-col items-center justify-center text-center cursor-pointer select-none border transition-all duration-300 pointer-events-auto hover:opacity-80 ${
+                  isDarkMode 
+                    ? 'bg-slate-900/60 border-white/5 shadow-lg' 
+                    : 'bg-white/70 border-black/5 shadow-md'
+                }`}
+                style={{ zIndex: 1 }}
+              >
+                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-3 opacity-70 ${
+                  isDarkMode ? 'bg-white/10 text-white' : 'bg-black/5 text-slate-700'
+                }`}>
+                  {React.cloneElement(prevCard.icon as React.ReactElement, { size: 26 })}
+                </div>
+                <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300 line-clamp-1">
+                  {prevCard.title}
+                </h4>
+              </motion.div>
+            );
+          })()}
+
+          {/* Right Peeking Card (Next card peek on the right) */}
+          {(() => {
+            const nextIndex = (currentIndex + 1) % cards.length;
+            const nextCard = cards[nextIndex];
+            return (
+              <motion.div
+                key={`peek-next-${nextCard.id}`}
+                initial={{ opacity: 0, x: 60, scale: 0.82 }}
+                animate={{ opacity: 0.45, x: 175, scale: 0.86 }}
+                transition={{ duration: 0.35, ease: 'easeOut' }}
+                onClick={handleNext}
+                className={`hidden sm:flex absolute w-[260px] md:w-[280px] h-[330px] rounded-[2rem] p-5 flex-col items-center justify-center text-center cursor-pointer select-none border transition-all duration-300 pointer-events-auto hover:opacity-80 ${
+                  isDarkMode 
+                    ? 'bg-slate-900/60 border-white/5 shadow-lg' 
+                    : 'bg-white/70 border-black/5 shadow-md'
+                }`}
+                style={{ zIndex: 1 }}
+              >
+                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-3 opacity-70 ${
+                  isDarkMode ? 'bg-white/10 text-white' : 'bg-black/5 text-slate-700'
+                }`}>
+                  {React.cloneElement(nextCard.icon as React.ReactElement, { size: 26 })}
+                </div>
+                <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300 line-clamp-1">
+                  {nextCard.title}
+                </h4>
+              </motion.div>
+            );
+          })()}
+
+          {/* Active Center Hero Card (Narrower, refined, sitting on top of stack with depth) */}
+          <div className="relative z-10 w-[275px] sm:w-[295px] md:w-[310px] h-[360px] sm:h-[380px] rounded-[2.2rem] overflow-hidden shadow-[0_16px_40px_-6px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_45px_rgba(0,0,0,0.5)] border border-black/[0.04] dark:border-white/[0.08] transition-all duration-300">
             <AnimatePresence mode="wait" custom={slideDirection} initial={false}>
               <motion.div
                 key={currentCard.id}
@@ -1061,16 +1074,16 @@ export const EchoHomeView: React.FC<EchoHomeViewProps> = ({
                 initial="initial"
                 animate="animate"
                 exit="exit"
-                className={`group absolute inset-0 cursor-pointer p-5 sm:p-6 rounded-[2rem] flex flex-col justify-between transition-all duration-300 select-none ${
+                className={`group absolute inset-0 cursor-pointer p-6 sm:p-7 rounded-[2.2rem] flex flex-col justify-center items-center text-center transition-all duration-300 select-none ${
                   isDarkMode 
-                    ? 'bg-slate-900/90 hover:bg-slate-900/95' 
+                    ? 'bg-slate-900/95 hover:bg-slate-900' 
                     : 'bg-white/95 hover:bg-white'
                 }`}
                 onClick={() => onStartSession(currentCard.type, currentCard.initialPrompt)}
               >
-                {/* 3.1 Atmospheric Scenery Background Texture & Ambient Glow */}
+                {/* Atmospheric Background Texture & Ambient Glow */}
                 <div 
-                  className={`absolute inset-0 rounded-[2rem] pointer-events-none overflow-hidden bg-gradient-to-b ${
+                  className={`absolute inset-0 rounded-[2.2rem] pointer-events-none overflow-hidden bg-gradient-to-b ${
                     isDarkMode ? currentCard.bgVisual.darkOverlay : currentCard.bgVisual.lightOverlay
                   }`}
                 >
@@ -1083,123 +1096,40 @@ export const EchoHomeView: React.FC<EchoHomeViewProps> = ({
                     style={{ backgroundColor: currentCard.bgVisual.ambientTint }}
                   />
                   <div 
-                    className="absolute -left-8 -top-8 w-36 h-36 rounded-full blur-[40px] pointer-events-none"
+                    className="absolute -left-10 -top-10 w-40 h-40 rounded-full blur-[40px] pointer-events-none"
                     style={{ backgroundColor: currentCard.bgVisual.ambientTint }}
                   />
                 </div>
 
-                {/* 1) Top Bar: Category Badges & Ambient Status */}
-                <div className="relative z-10 flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className={`px-2.5 py-0.8 rounded-lg text-xs font-bold border shrink-0 ${
-                      currentCard.serviceCategory === 'focus'
-                        ? (isDarkMode ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/25' : 'bg-emerald-50 text-emerald-700 border-emerald-200/80')
-                        : currentCard.serviceCategory === 'schedule'
-                        ? (isDarkMode ? 'bg-blue-500/15 text-blue-300 border-blue-500/25' : 'bg-blue-50 text-blue-700 border-blue-200/80')
-                        : (isDarkMode ? 'bg-purple-500/15 text-purple-300 border-purple-500/25' : 'bg-purple-50 text-purple-700 border-purple-200/80')
-                    }`}>
-                      {currentCard.categoryBadge}
-                    </span>
-
-                    <span className={`px-2 py-0.8 rounded-lg text-xs font-medium border shrink-0 ${
-                      isDarkMode 
-                        ? `${activeTheme.badgeBgDark} ${activeTheme.badgeTextDark}` 
-                        : `${activeTheme.badgeBgLight} ${activeTheme.badgeTextLight}`
-                    }`}>
-                      {currentCard.tag}
-                    </span>
-                  </div>
-
-                  <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${
-                    isDarkMode ? 'text-slate-400 bg-white/5' : 'text-slate-400 bg-black/[0.03]'
-                  }`}>
-                    点击直达
-                  </span>
-                </div>
-
-                {/* 2) Inspiring Mood Sentence / Quote */}
-                <div className={`relative z-10 text-xs font-medium leading-relaxed italic px-1 pt-1 ${
-                  isDarkMode ? 'text-slate-300/90' : 'text-slate-600'
-                }`}>
-                  "{activeProfile.aiQuote}"
-                </div>
-
-                {/* 3) Portrait Center Body: Prominent Art Icon + Title + Description */}
-                <div className="relative z-10 flex flex-col items-center text-center my-auto py-2">
-                  <div className={`w-16 h-16 rounded-2xl flex items-center justify-center shadow-xs mb-3 transition-transform duration-300 group-hover:scale-105 ${
+                {/* Clean Pure Center Atmospheric Widget: Icon + Title + Description */}
+                <div className="relative z-10 flex flex-col items-center text-center my-auto py-1 px-1">
+                  {/* Prominent Art Metaphor Icon with Smooth Hover Glow & Motion */}
+                  <div className={`relative w-20 h-20 sm:w-22 sm:h-22 rounded-[1.6rem] flex items-center justify-center shadow-md mb-4 transition-all duration-300 group-hover:scale-108 ${
                     isDarkMode ? activeTheme.iconBgDark : activeTheme.iconBgLight
                   }`}>
-                    {React.cloneElement(currentCard.icon as React.ReactElement, { size: 30 })}
+                    {/* Pulsing subtle ambient halo around icon */}
+                    <div 
+                      className="absolute inset-0 rounded-[1.6rem] blur-md opacity-40 transition-opacity group-hover:opacity-80"
+                      style={{ backgroundColor: currentCard.bgVisual.ambientTint }}
+                    />
+                    <div className="relative z-10">
+                      {React.cloneElement(currentCard.icon as React.ReactElement, { size: 36 })}
+                    </div>
                   </div>
 
-                  <h3 className={`text-base sm:text-lg font-bold tracking-tight leading-snug px-1 line-clamp-2 ${
+                  {/* Service Title */}
+                  <h3 className={`text-lg sm:text-xl font-extrabold tracking-tight leading-snug px-1 transition-colors duration-200 ${
                     isDarkMode ? 'text-white group-hover:text-indigo-200' : 'text-slate-900 group-hover:text-indigo-950'
                   }`}>
                     {currentCard.title}
                   </h3>
 
-                  <p className={`text-xs font-normal leading-relaxed mt-1.5 px-2 line-clamp-2 ${
-                    isDarkMode ? 'text-slate-300' : 'text-slate-600'
+                  {/* Clean Expressive Service Meaning / Summary */}
+                  <p className={`text-xs sm:text-[13px] font-normal leading-relaxed mt-2 px-1 line-clamp-2 max-w-[240px] ${
+                    isDarkMode ? 'text-slate-300/85' : 'text-slate-600/90'
                   }`}>
                     {currentCard.desc}
                   </p>
-                </div>
-
-                {/* 4) Bottom Information Bar: Recommended Duration / Context Metadata, Live Waveform, and Voice Mic */}
-                <div className="relative z-10 flex items-center justify-between gap-2 pt-3 border-t border-black/[0.04] dark:border-white/[0.06]">
-                  {/* Service Duration & Context Info */}
-                  <div className="flex items-center gap-1.5 min-w-0">
-                    <div className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-medium transition-colors ${
-                      isDarkMode 
-                        ? 'bg-white/5 border-white/5 text-slate-300' 
-                        : 'bg-slate-50 border-slate-100 text-slate-600'
-                    }`}>
-                      <Timer size={13} className="text-indigo-500 opacity-85 shrink-0" />
-                      <span className="text-[11px] opacity-75">建议时长</span>
-                      <span className="font-mono font-bold text-slate-900 dark:text-white text-xs">
-                        {currentCard.recommendedDuration || '20 min'}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 shrink-0">
-                    {/* Live Waveform Indicator */}
-                    <div className={`flex items-end gap-0.8 h-4 px-1 ${
-                      isDarkMode ? 'text-slate-400' : 'text-slate-400'
-                    }`}>
-                      <motion.span 
-                        animate={{ height: ['35%', '95%', '35%'] }} 
-                        transition={{ duration: 1.1, repeat: Infinity, ease: 'easeInOut', delay: 0.1 }}
-                        className="w-0.5 bg-current rounded-full" 
-                      />
-                      <motion.span 
-                        animate={{ height: ['65%', '100%', '65%'] }} 
-                        transition={{ duration: 0.8, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
-                        className="w-0.5 bg-current rounded-full" 
-                      />
-                      <motion.span 
-                        animate={{ height: ['40%', '85%', '40%'] }} 
-                        transition={{ duration: 1.3, repeat: Infinity, ease: 'easeInOut', delay: 0.2 }}
-                        className="w-0.5 bg-current rounded-full" 
-                      />
-                    </div>
-
-                    {/* Mic Quick Voice Trigger */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onSendMessage(currentCard.initialPrompt);
-                      }}
-                      className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all cursor-pointer border ${
-                        isDarkMode 
-                          ? 'bg-white/10 hover:bg-white/20 border-white/10 text-white' 
-                          : 'bg-black/5 hover:bg-black/10 border-black/5 text-slate-800'
-                      }`}
-                      title="语音呼唤"
-                    >
-                      <Mic size={14} />
-                    </button>
-                  </div>
                 </div>
 
               </motion.div>
@@ -1209,7 +1139,7 @@ export const EchoHomeView: React.FC<EchoHomeViewProps> = ({
         </div>
 
         {/* Minimalist Ambient Pagination Indicator (Fully integrated with atmosphere) */}
-        <div className="flex items-center gap-1.5 mt-2.5 px-2.5 py-1 rounded-full bg-transparent hover:bg-black/[0.03] dark:hover:bg-white/[0.04] transition-all duration-300">
+        <div className="flex items-center gap-1.5 mt-3 px-2.5 py-1 rounded-full bg-transparent hover:bg-black/[0.03] dark:hover:bg-white/[0.04] transition-all duration-300">
           <button
             onClick={handlePrev}
             className={`p-0.5 rounded-full opacity-40 hover:opacity-100 transition-opacity cursor-pointer ${
@@ -1259,28 +1189,35 @@ export const EchoHomeView: React.FC<EchoHomeViewProps> = ({
         </div>
       </div>
 
-      {/* 4. Minimalist Bottom 3 Pillars Context Summary */}
-      <div className="relative z-10 shrink-0 flex items-center justify-center gap-4 text-center pb-1">
-        <span className={`text-[10px] font-medium tracking-wide flex items-center gap-1 ${
-          isDarkMode ? 'text-slate-400' : 'text-slate-500'
-        }`}>
-          <Radio size={10} className="text-purple-400" />
-          音乐/资讯播客
-        </span>
-        <span className="text-[10px] opacity-30">·</span>
-        <span className={`text-[10px] font-medium tracking-wide flex items-center gap-1 ${
-          isDarkMode ? 'text-slate-400' : 'text-slate-500'
-        }`}>
-          <Timer size={10} className="text-emerald-400" />
-          AI 计时/专注服务
-        </span>
-        <span className="text-[10px] opacity-30">·</span>
-        <span className={`text-[10px] font-medium tracking-wide flex items-center gap-1 ${
-          isDarkMode ? 'text-slate-400' : 'text-slate-500'
-        }`}>
-          <CalendarCheck size={10} className="text-blue-400" />
-          日程规划与提醒
-        </span>
+      {/* Bottom Context Dynamic Categories Summary */}
+      <div className="relative z-10 shrink-0 flex items-center justify-center flex-wrap gap-2.5 sm:gap-3.5 text-center mt-1 pb-1">
+        {activeCategories.map((cat, idx) => {
+          const isCategoryActive = (currentCard.serviceCategory || '') === cat.key;
+          return (
+            <React.Fragment key={cat.key}>
+              {idx > 0 && <span className="text-[10px] opacity-30 select-none">·</span>}
+              <button
+                onClick={() => {
+                  setSlideDirection('down');
+                  setCurrentIndex(cat.firstCardIndex);
+                }}
+                className={`text-[10.5px] font-medium tracking-wide flex items-center gap-1.5 transition-all duration-300 cursor-pointer rounded-full px-2 py-0.5 ${
+                  isCategoryActive
+                    ? isDarkMode
+                      ? 'text-white font-semibold'
+                      : 'text-slate-900 font-semibold'
+                    : isDarkMode
+                      ? 'text-slate-400 hover:text-slate-200'
+                      : 'text-slate-500 hover:text-slate-800'
+                }`}
+                title={`切换至 ${cat.label}`}
+              >
+                {cat.icon}
+                <span>{cat.label}</span>
+              </button>
+            </React.Fragment>
+          );
+        })}
       </div>
 
     </div>

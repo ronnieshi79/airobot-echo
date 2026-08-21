@@ -580,53 +580,55 @@ export default function App() {
         );
       case 'echo':
         return (
-          <FunctionalModulePlate isDarkMode={isDarkMode} className="!bg-transparent !border-transparent !shadow-none !backdrop-blur-none">
-            <div className="relative z-10 w-full h-full flex flex-col justify-between">
-              {subCategory === 'echo-history' ? (
+          <div className="relative z-10 w-full flex flex-col items-center justify-center">
+            {subCategory === 'echo-history' ? (
+              <FunctionalModulePlate isDarkMode={isDarkMode}>
                 <EchoHistoryView 
                   isDarkMode={isDarkMode}
                   historySummaries={historySummaries}
                   onBack={() => setSubCategory('echo-home')}
                 />
-              ) : (
-                <EchoHomeView 
-                  contextMode={contextMode}
-                  onContextModeChange={setContextMode}
-                  dayTypeMode={dayTypeMode}
-                  isWeekend={isWeekend}
-                  historySummaries={historySummaries}
-                  onSendMessage={(text) => {
-                    if (!isChatOpen) setIsChatOpen(true);
-                    if (!isVoiceActive) startVoiceMode();
-                    handleRobotChat(text);
-                  }}
-                  isDarkMode={isDarkMode}
-                  subCategory={subCategory}
-                  time={time}
-                  onActiveCardChange={setActiveRecommendedCard}
-                  onViewHistory={() => setSubCategory('echo-history')}
-                  onStartSession={(type, content) => {
-                    startNewSession(type);
-                    if (content) {
-                      setMessages([{ role: 'user', text: content }]);
-                    } else {
-                      setMessages([]);
-                    }
-                    if (!isChatOpen) setIsChatOpen(true);
-                    if (!isVoiceActive) startVoiceMode();
-                    handleRobotChat(`开启${type === 'story' ? '故事' : type === 'podcast' ? '播客' : type === 'confide' ? '倾诉' : type === 'task' ? '事务' : type === 'daily' ? '日记' : '灵感'}情境`, type);
-                  }}
-                />
-              )}
-              <AnimatePresence>
-                {activeChatSession && (
-                  <motion.div
-                    initial={{ opacity: 0, y: '100%' }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: '100%' }}
-                    transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                    className="absolute inset-0 z-50"
-                  >
+              </FunctionalModulePlate>
+            ) : (
+              <EchoHomeView 
+                contextMode={contextMode}
+                onContextModeChange={setContextMode}
+                dayTypeMode={dayTypeMode}
+                isWeekend={isWeekend}
+                historySummaries={historySummaries}
+                onSendMessage={(text) => {
+                  if (!isChatOpen) setIsChatOpen(true);
+                  if (!isVoiceActive) startVoiceMode();
+                  handleRobotChat(text);
+                }}
+                isDarkMode={isDarkMode}
+                subCategory={subCategory}
+                time={time}
+                onActiveCardChange={setActiveRecommendedCard}
+                onViewHistory={() => setSubCategory('echo-history')}
+                onStartSession={(type, content) => {
+                  startNewSession(type);
+                  if (content) {
+                    setMessages([{ role: 'user', text: content }]);
+                  } else {
+                    setMessages([]);
+                  }
+                  if (!isChatOpen) setIsChatOpen(true);
+                  if (!isVoiceActive) startVoiceMode();
+                  handleRobotChat(`开启${type === 'story' ? '故事' : type === 'podcast' ? '播客' : type === 'confide' ? '倾诉' : type === 'task' ? '事务' : type === 'daily' ? '日记' : '灵感'}情境`, type);
+                }}
+              />
+            )}
+            <AnimatePresence>
+              {activeChatSession && (
+                <motion.div
+                  initial={{ opacity: 0, y: '100%' }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: '100%' }}
+                  transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                  className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+                >
+                  <div className="w-full max-w-[700px] h-[720px]">
                     <EchoSessionView 
                       type={activeChatSession.type as any}
                       messages={messages}
@@ -635,11 +637,11 @@ export default function App() {
                       onAddSchedule={addSchedule}
                       onAddAlarm={addAlarm}
                     />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </FunctionalModulePlate>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         );
       default:
         return null;
@@ -651,23 +653,46 @@ export default function App() {
       
       {/* Decorative Background Elements */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className={`absolute -top-20 -left-20 w-96 h-96 rounded-full blur-[100px] opacity-25 transition-all duration-700 ${themeGlowMap[activeContext]}`}></div>
-        <div className={`absolute bottom-0 -right-20 w-[600px] h-[600px] rounded-full blur-[120px] opacity-15 transition-all duration-700 ${themeGlowMap[activeContext]}`}></div>
-        <div className={`absolute top-1/2 left-1/4 w-20 h-20 rounded-full blur-[40px] opacity-30 ${isDarkMode ? 'bg-slate-600' : 'bg-white'}`}></div>
+        <div className={`absolute -top-24 -left-24 w-[500px] h-[500px] rounded-full blur-[120px] opacity-30 transition-all duration-700 ${themeGlowMap[activeContext]}`}></div>
+        <div className={`absolute bottom-0 -right-24 w-[650px] h-[650px] rounded-full blur-[140px] opacity-20 transition-all duration-700 ${themeGlowMap[activeContext]}`}></div>
       </div>
 
-      {/* Header Info */}
-      <div className="fixed top-8 left-12 flex items-center gap-4 z-10">
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-lg ${isDarkMode ? 'bg-indigo-600 text-white' : 'bg-white text-indigo-600'}`}>
-          <Activity size={20} />
+      {/* Header Info: AI Echo Brand & Slogan replacing AETHER */}
+      <div className="fixed top-6 left-8 sm:left-12 flex items-center gap-3.5 z-20">
+        <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shadow-md transition-all duration-500 ${
+          isDarkMode 
+            ? 'bg-gradient-to-br from-indigo-500/30 to-purple-600/30 border border-indigo-400/30 text-indigo-300 shadow-[0_0_15px_rgba(99,102,241,0.2)]' 
+            : 'bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-200/80 text-indigo-600 shadow-[0_2px_10px_rgba(99,102,241,0.08)]'
+        }`}>
+          <Sparkles size={19} className="animate-pulse" />
         </div>
-        <span className={`text-xl font-black tracking-widest ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>AETHER</span>
+        <div className="flex flex-col">
+          <div className="flex items-center gap-2">
+            <span className={`text-base sm:text-lg font-black tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+              AI Echo
+            </span>
+            <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border ${
+              isDarkMode ? 'bg-white/10 border-white/15 text-indigo-300' : 'bg-indigo-50 border-indigo-200 text-indigo-600'
+            }`}>
+              Agentic
+            </span>
+          </div>
+          <p className={`text-xs font-medium tracking-wide hidden sm:block ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+            你的每次需求，皆有温暖回响
+          </p>
+        </div>
       </div>
 
-      <div className="fixed top-8 right-12 flex items-center gap-6 text-xs font-bold text-slate-400 z-10">
+      {/* Top Right System Status & Live Context Indicator */}
+      <div className="fixed top-6 right-8 sm:right-12 flex items-center gap-4 sm:gap-6 text-xs font-bold text-slate-400 z-20">
+        {/* Real-time sensing status badge */}
+        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium bg-black/[0.03] dark:bg-white/[0.04] text-slate-400 border border-black/[0.03] dark:border-white/[0.05]">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="text-[10.5px]">实时感知就绪</span>
+        </div>
         <div className="flex items-center gap-2"><Battery size={16} /> 85%</div>
         <div className="flex items-center gap-2"><Wifi size={16} /> ONLINE</div>
-        <div className={`text-lg font-mono ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}>
+        <div className={`text-lg font-mono font-bold ${isDarkMode ? 'text-slate-200' : 'text-slate-700'}`}>
           {time.toLocaleTimeString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit' })}
         </div>
       </div>
